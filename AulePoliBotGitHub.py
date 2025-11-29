@@ -142,3 +142,4 @@ if __name__ == '__main__':
     
     print("🤖 Bot avviato con supporto JSON!")
     application.run_polling()
+
