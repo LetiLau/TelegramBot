@@ -2,22 +2,58 @@ import logging
 import requests
 import re
 import os
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from bs4 import BeautifulSoup
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 
-# 1. CONFIGURAZIONE LOGGING
-# Serve per leggere eventuali errori nel terminale
+# --- CONFIGURAZIONE ---
+# Il token verrà preso dalle variabili d'ambiente di Render
+TOKEN = os.getenv("TOKEN_BOT")
+
+# --- LISTA AULE CON PRESE ---
+# AULE_CON_PRESE = {
+#    "R1", "R2", "R3", "R4", 
+ #   "12A", "14A", "15A", "16A",
+  #  "1I", "2I", "3I", "4I", "5I",
+   # "LAIB1", "LAIB2", "Sala Tesisti",
+    #"Agorà", "Aquarium"
+#}
+
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 
-# 2. LA FUNZIONE "CERVELLO" (Scraping SWAS)
+# --- TRUCCO PER RENDER (Finto Server Web) ---
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Il Bot e' vivo e vegeto!")
+
+def start_fake_server():
+    # Render ci dice su quale porta ascoltare tramite la variabile PORT
+    port = int(os.environ.get("PORT", 8080))
+    server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
+    print(f"🌍 Finto server web avviato sulla porta {port}")
+    server.serve_forever()
+# ------------------------------------------
+
+def formatta_aule_con_prese(testo_grezzo):
+    lista_aule = testo_grezzo.split(',')
+    lista_formattata = []
+    for aula in lista_aule:
+        nome_pulito = aula.strip()
+        if nome_pulito in AULE_CON_PRESE:
+            lista_formattata.append(f"<b>{nome_pulito}</b>🔌")
+        else:
+            lista_formattata.append(nome_pulito)
+    return ", ".join(lista_formattata)
+
 def ottieni_aule_swas():
     url = "https://www.swas.polito.it/dotnet/orari_lezione_pub/ricercaaulelibereperfasceorarie.aspx"
-    
-    # Ci fingiamo un browser vero
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     }
@@ -29,11 +65,9 @@ def ottieni_aule_swas():
 
         soup = BeautifulSoup(response.text, 'html.parser')
         messaggio = []
-        
-        # Aggiungiamo un'intestazione
-        messaggio.append("🎓 **AULE LIBERE POLITO (Oggi)** 🎓\n")
+        messaggio.append("🎓 **AULE LIBERE POLITO** 🎓")
+        messaggio.append("*(Le aule con 🔌 hanno le prese)*\n")
 
-        # Cerchiamo gli span che contengono "lbl_AuleLibere" nell'ID
         aule_spans = soup.find_all('span', id=re.compile("lbl_AuleLibere"))
 
         if not aule_spans:
@@ -41,12 +75,10 @@ def ottieni_aule_swas():
 
         count = 0
         for span_aula in aule_spans:
-            # Testo delle aule
             testo_aule = span_aula.text.strip()
             if not testo_aule:
                 continue
 
-            # Cerchiamo l'orario risalendo alla riga (tr) e poi alla prima cella (td)
             riga_padre = span_aula.find_parent('tr')
             orario = "??"
             if riga_padre:
@@ -54,51 +86,44 @@ def ottieni_aule_swas():
                 if celle:
                     orario = celle[0].text.strip()
 
-            # Formattazione del messaggio
-            messaggio.append(f"🕒 *{orario}*")
-            messaggio.append(f"🏫 `{testo_aule}`") # Usa il font 'code' per copiare meglio
+            aule_formattate = formatta_aule_con_prese(testo_aule)
+            messaggio.append(f"🕒 {orario}")
+            messaggio.append(f"🏫 {aule_formattate}") 
             messaggio.append("───────────────")
             count += 1
 
         if count == 0:
             return "Nessuna aula libera trovata al momento."
-
         return "\n".join(messaggio)
-
     except Exception as e:
-        return f"❌ Errore tecnico nel codice: {e}"
+        return f"❌ Errore tecnico: {e}"
 
-# 3. LA FUNZIONE "VOCE" (Risposta Telegram)
 async def aule(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_name = update.effective_user.first_name
-    await update.message.reply_text(f"Ciao {user_name}, controllo il sito SWAS per te... ⏳")
-    
-    # Chiama la funzione di scraping
-    testo_risposta = ottieni_aule_swas()
-    
-    # Telegram non accetta messaggi più lunghi di 4096 caratteri.
-    # Se la lista è lunghissima, la spezziamo (controllo di sicurezza base)
-    if len(testo_risposta) > 4000:
-        await update.message.reply_text(testo_risposta[:4000] + "\n... (messaggio tagliato per limite lunghezza)", parse_mode='Markdown')
+    await update.message.reply_text("🔎 Controllo SWAS e cerco le prese... ⏳")
+    risultato = ottieni_aule_swas()
+    if len(risultato) > 4000:
+        await update.message.reply_text(risultato[:4000] + "\n...(tagliato)...", parse_mode='HTML')
     else:
-        await update.message.reply_text(testo_risposta, parse_mode='Markdown')
+        await update.message.reply_text(risultato, parse_mode='HTML')
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Ciao! Scrivi /aule per vedere dove puoi studiare oggi.")
+    await update.message.reply_text("Ciao! Scrivi /aule per vedere dove studiare.")
 
-# 4. IL MOTORE PRINCIPALE
 if __name__ == '__main__':
-    # SCRIVI QUESTO: Dice al bot di cercarlo nelle impostazioni del server
-    TOKEN = os.getenv("TOKEN_BOT") 
-    
     if not TOKEN:
-        print("⚠️ Errore: Manca il TOKEN_BOT nelle variabili d'ambiente!")
+        print("⚠️ Errore: TOKEN_BOT mancante!")
         exit()
-    
+
+    # --- AVVIO DEL FINTO SERVER IN BACKGROUND ---
+    # Questo thread serve solo a tenere contento Render
+    t = threading.Thread(target=start_fake_server)
+    t.daemon = True
+    t.start()
+    # --------------------------------------------
+
     application = ApplicationBuilder().token(TOKEN).build()
-    
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CommandHandler('aule', aule))
     
-    print("🤖 Il Bot è acceso e in ascolto!")
+    print("🤖 Bot avviato!")
     application.run_polling()
