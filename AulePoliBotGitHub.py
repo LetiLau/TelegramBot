@@ -4,6 +4,7 @@ import re
 import os
 import json # <--- Nuova libreria per leggere il file
 import threading
+import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from bs4 import BeautifulSoup
 from telegram import Update
@@ -191,5 +192,4 @@ if __name__ == '__main__':
     
     print("🤖 Bot avviato con supporto JSON!")
     application.run_polling()
-
 
