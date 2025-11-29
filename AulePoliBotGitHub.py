@@ -166,6 +166,9 @@ async def prese(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 if __name__ == '__main__':
+    print("💤 Aspetto 10 secondi per permettere al vecchio bot di spegnersi...")
+    time.sleep(10)
+    
     if not TOKEN:
         print("⚠️ Token mancante")
         exit()
@@ -188,4 +191,5 @@ if __name__ == '__main__':
     
     print("🤖 Bot avviato con supporto JSON!")
     application.run_polling()
+
 
