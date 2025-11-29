@@ -72,7 +72,7 @@ def formatta_aule_con_prese(testo_grezzo):
             
     return ", ".join(lista_formattata)
 
-def ottieni_aule_swas():
+def ottieni_aule_swas(solo_prese=False):
     url = "https://www.swas.polito.it/dotnet/orari_lezione_pub/ricercaaulelibereperfasceorarie.aspx"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -188,3 +188,4 @@ if __name__ == '__main__':
     
     print("🤖 Bot avviato con supporto JSON!")
     application.run_polling()
+
