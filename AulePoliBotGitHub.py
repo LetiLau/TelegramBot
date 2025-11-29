@@ -96,13 +96,15 @@ def ottieni_aule_swas():
         count = 0
         for span_aula in aule_spans:
             testo_aule = span_aula.text.strip()
-            if not testo_aule: continue
+            if not testo_aule: 
+                continue
 
             riga_padre = span_aula.find_parent('tr')
             orario = "??"
             if riga_padre:
                 celle = riga_padre.find_all('td')
-                if celle: orario = celle[0].text.strip()
+                if celle: 
+                    orario = celle[0].text.strip()
 
             aule_formattate = formatta_aule_con_prese(testo_aule)
             messaggio.append(f"🕒 {orario}")
@@ -110,22 +112,58 @@ def ottieni_aule_swas():
             messaggio.append("───────────────")
             count += 1
 
-        if count == 0: return "Nessuna aula libera trovata."
+        if count == 0: 
+            return "Nessuna aula libera trovata."
         return "\n".join(messaggio)
 
     except Exception as e:
         return f"❌ Errore: {e}"
 
-async def aule(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🔎 Analizzo SWAS e database prese... ⏳")
-    risultato = ottieni_aule_swas()
+
+# --- I COMANDI DEL BOT ---
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_name = update.effective_user.first_name
+    await update.message.reply_text(f"Ciao {user_name}, controllo il sito SWAS per te... ⏳")
+
+
+async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    testo_help = (
+        "🤖 <b>GUIDA AI COMANDI</b> 🤖\n\n"
+        "🔹 <b>/auleAll</b> (oppure <b>/aule</b>)\n"
+        "Ti mostra l'elenco completo di tutte le aule libere in questo momento. "
+        "Le aule segnate con 🔌 hanno le prese elettriche disponibili.\n\n"
+        "🔹 <b>/prese</b>\n"
+        "Filtra la lista e ti mostra <u>SOLO</u> le aule libere che hanno le prese. "
+        "Usalo quando hai il PC scarico!😉\n\n"
+        "🔹 <b>/help</b>\n"
+        "Mostra questo messaggio di aiuto.🆘\n\n"
+        "<i>Presto arriveranno nuove funzioni... stay tuned!</i> 🚀"
+    )
+    await update.message.reply_text(testo_help, parse_mode='HTML')
+
+
+async def aule_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🔎 Cerco tutte le aule libere...")
+    risultato = ottieni_aule_swas(solo_prese=False)
+    # Invio sicuro (spezza se troppo lungo)
     if len(risultato) > 4000:
         await update.message.reply_text(risultato[:4000] + "...", parse_mode='HTML')
     else:
         await update.message.reply_text(risultato, parse_mode='HTML')
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Ciao! Scrivi /aule per cercare posto.")
+
+async def prese(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🔌 Filtro solo le aule con prese...")
+    risultato = ottieni_aule_swas(solo_prese=True)
+    if len(risultato) > 4000:
+        await update.message.reply_text(risultato[:4000] + "...", parse_mode='HTML')
+    else:
+        await update.message.reply_text(risultato, parse_mode='HTML')
+
+
+
+
+
 
 if __name__ == '__main__':
     if not TOKEN:
@@ -137,9 +175,16 @@ if __name__ == '__main__':
     t.start()
 
     application = ApplicationBuilder().token(TOKEN).build()
+
+    # Registrazione nuovi comandi
     application.add_handler(CommandHandler('start', start))
-    application.add_handler(CommandHandler('aule', aule))
+    application.add_handler(CommandHandler('help', help))
+    application.add_handler(CommandHandler('auleall', aule_all))
+    application.add_handler(CommandHandler('prese', prese))
+    
+    
+    # Mantengo anche il vecchio /aule come alias per /auleAll (comodo per abitudine)
+    application.add_handler(CommandHandler('aule', aule_all))
     
     print("🤖 Bot avviato con supporto JSON!")
     application.run_polling()
-
