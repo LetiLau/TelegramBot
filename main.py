@@ -18,6 +18,58 @@ TOKEN = os.getenv("TOKEN_BOT")
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 # --- COMANDI BOT ---
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_name = update.effective_user.first_name
+    await update.message.reply_text(f"Ciao {user_name}! Ecco tutti i comandi disponibili.")
+
+
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    testo = (
+        "🤖 <b>GUIDA AI COMANDI</b> 🤖\n\n"
+        "🔹 <b>/auleAll</b> (oppure <b>/aule</b>)\n"
+        "Ti mostra l'elenco completo di tutte le aule libere in questo momento. "
+        "Le aule segnate con 🔌 hanno le prese elettriche disponibili.\n\n"
+        "🔹 <b>/prese</b>\n"
+        "Filtra la lista e ti mostra <u>SOLO</u> le aule libere che hanno le prese a tua disposizione. "
+        "Usalo quando hai il PC scarico!😉\n\n"
+        "🔹 <b>/maratona</b>\n"
+        "Mostra le aule che hanno liberi due turni consecutivi (tot. 3h)"
+        "🔹 <b>/help</b>\n"
+        "Mostra questo messaggio di aiuto🆘.\n\n"
+        "<i>Presto arriveranno nuove funzioni... stay tuned!</i> 🚀"
+    )
+    await update.message.reply_text(testo, parse_mode='HTML')
+
+
+# --- NUOVO COMANDO SUGGEST ---
+async def suggest(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # L'utente scrive: /suggest bla bla bla
+    # context.args contiene tutto quello che c'è dopo il comando
+    messaggio_utente = " ".join(context.args)
+    
+    if not messaggio_utente:
+        await update.message.reply_text("Scrivi il suggerimento dopo il comando.\nEs: <code>/suggest Aggiungi le mappe!</code>", parse_mode='HTML')
+        return
+
+    # Recuperiamo il TUO ID dalle variabili d'ambiente (o scrivilo qui se vuoi fare veloce)
+    ADMIN_ID = os.getenv("ADMIN_ID") 
+    
+    if not ADMIN_ID:
+        await update.message.reply_text("⚠️ Errore: L'admin non ha configurato il suo ID.")
+        return
+
+    # Costruiamo il messaggio da inviare a TE
+    username = update.effective_user.username or "Anonimo"
+    testo_per_admin = f"💡 <b>NUOVO SUGGERIMENTO</b>\nDa: @{username}\n\n<i>{messaggio_utente}</i>"
+    
+    try:
+        # Il bot manda il messaggio a TE
+        await context.bot.send_message(chat_id=ADMIN_ID, text=testo_per_admin, parse_mode='HTML')
+        # Conferma all'utente
+        await update.message.reply_text("✅ Messaggio inviato allo sviluppatore. Grazie!")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Impossibile inviare: {e}")
+
 
 async def aule_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🔎 Scarico tutte le aule...")
@@ -40,6 +92,7 @@ async def aule_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
     await invia_lungo(update, "\n".join(messaggio))
 
+
 async def prese(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🔌 Filtro solo prese...")
     dati = scraper.scarica_dati_swas()
@@ -57,6 +110,7 @@ async def prese(update: Update, context: ContextTypes.DEFAULT_TYPE):
             messaggio.append("───────────────")
             
     await invia_lungo(update, "\n".join(messaggio))
+
 
 async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🏃‍♂️ Calcolo Maratona Studio...")
@@ -90,27 +144,6 @@ async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if not trovato: messaggio.append("😢 Nessuna maratona possibile oggi.")
     await invia_lungo(update, "\n".join(messaggio))
-
-async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    testo = (
-        "🤖 <b>GUIDA AI COMANDI</b> 🤖\n\n"
-        "🔹 <b>/auleAll</b> (oppure <b>/aule</b>)\n"
-        "Ti mostra l'elenco completo di tutte le aule libere in questo momento. "
-        "Le aule segnate con 🔌 hanno le prese elettriche disponibili.\n\n"
-        "🔹 <b>/prese</b>\n"
-        "Filtra la lista e ti mostra <u>SOLO</u> le aule libere che hanno le prese a tua disposizione. "
-        "Usalo quando hai il PC scarico!😉\n\n"
-        "🔹 <b>/maratona</b>\n"
-        "Mostra le aule che hanno liberi due turni consecutivi (tot. 3h)"
-        "🔹 <b>/help</b>\n"
-        "Mostra questo messaggio di aiuto🆘.\n\n"
-        "<i>Presto arriveranno nuove funzioni... stay tuned!</i> 🚀"
-    )
-    await update.message.reply_text(testo, parse_mode='HTML')
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_name = update.effective_user.first_name
-    await update.message.reply_text(f"Ciao {user_name}! Ecco tutti i comandi disponibili.")
 
 # Funzione helper per mandare messaggi lunghi
 # --- GESTIONE MESSAGGI LUNGHI (VERSIONE SMART ESTETICA) ---
@@ -146,6 +179,9 @@ async def invia_lungo(update, testo):
     # 5. Se alla fine del giro è avanzato qualcosa, inviamolo
     if chunk:
         await update.message.reply_text(chunk, parse_mode='HTML')
+
+
+
 # --- AVVIO ---
 if __name__ == '__main__':
     print("💤 Pausa avvio...")
@@ -161,10 +197,13 @@ if __name__ == '__main__':
     
     app.add_handler(CommandHandler('start', start))
     app.add_handler(CommandHandler('help', help_cmd))
+    app.add_handler(CommandHandler('suggest', suggest))
+    
     app.add_handler(CommandHandler('auleall', aule_all))
     app.add_handler(CommandHandler('aule', aule_all))
     app.add_handler(CommandHandler('prese', prese))
     app.add_handler(CommandHandler('maratona', maratona))
+
     
     print("🤖 Bot Avviato!")
     app.run_polling()
