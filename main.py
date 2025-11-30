@@ -137,17 +137,39 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name = update.effective_user.first_name
     await update.message.reply_text(f"Ciao {user_name}! Ecco tutti i comandi disponibili ⬇️")
 
+# --- GESTIONE MESSAGGI LUNGHI (FIX DOMENICA) ---
 async def invia_lungo(update, testo):
     SEPARATORE = "───────────────"
     blocchi = testo.split(SEPARATORE)
     chunk = ""
+    
     for blocco in blocchi:
         if not blocco.strip(): continue
+        
         pezzo_completo = blocco.strip() + "\n" + SEPARATORE + "\n"
+        
+        # CASO SPECIALE DOMENICA: Il singolo blocco è GIGANTE (supera 4000 da solo)
+        if len(pezzo_completo) > 4000:
+            # 1. Se avevamo accumulato qualcosa prima, inviamolo subito
+            if chunk:
+                await update.message.reply_text(chunk, parse_mode='HTML')
+                chunk = ""
+            
+            # 2. Il blocco gigante lo dobbiamo spezzare brutalmente in più messaggi
+            # perché Telegram non accetta un messaggio > 4096
+            for x in range(0, len(pezzo_completo), 4000):
+                await update.message.reply_text(pezzo_completo[x:x+4000], parse_mode='HTML')
+            
+            continue # Passiamo al prossimo blocco
+
+        # CASO NORMALE: Il blocco ci sta, ma sommato al resto supera il limite
         if len(chunk) + len(pezzo_completo) > 4000:
             await update.message.reply_text(chunk, parse_mode='HTML')
             chunk = ""
+        
         chunk += pezzo_completo
+        
+    # Invia l'ultimo pezzetto rimasto
     if chunk:
         await update.message.reply_text(chunk, parse_mode='HTML')
 
