@@ -90,6 +90,11 @@ async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def suggest(update: Update, context: ContextTypes.DEFAULT_TYPE):
     messaggio_utente = " ".join(context.args)
+
+    # --- DEBUGGING ---
+    print(f"DEBUG: Admin ID letto da variabili: {ADMIN_ID}")
+    # -----------------
+    
     if not messaggio_utente:
         await update.message.reply_text("⚠️ Scrivi il tuo messaggio dopo il comando.", parse_mode='HTML')
         return
