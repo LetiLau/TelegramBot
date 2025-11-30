@@ -128,9 +128,7 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Filtra la lista e ti mostra <u>SOLO</u> le aule libere che hanno le prese a tua disposizione. "
         "Usalo quando hai il PC scarico!😉\n\n"
         "🔹 <b>/maratona</b>\n"
-        "Mostra le aule che hanno liberi due turni consecutivi (tot. 3h)"
-        
-       
+        "Mostra le aule che hanno liberi due turni consecutivi (tot. 3h)\n\n"      
         "<i>Presto arriveranno nuove funzioni... stay tuned!</i> 🚀"
     )
     await update.message.reply_text(testo, parse_mode='HTML')
