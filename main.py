@@ -1,123 +1,67 @@
 ###############################
 # main.py (Il capo): Gestisce Telegram, i comandi e coordina gli altri due.
 ###############################
-
 import os
 import time
 import logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 
-# --- IMPORTIAMO I NOSTRI FILE ---
-import utils   # Importa utils.py
-import scraper # Importa scraper.py
+import utils
+import scraper
 
-# --- CONFIGURAZIONE ---
 TOKEN = os.getenv("TOKEN_BOT")
+ADMIN_ID = os.getenv("ADMIN_ID") 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-# --- COMANDI BOT ---
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_name = update.effective_user.first_name
-    await update.message.reply_text(f"Ciao {user_name}! Ecco tutti i comandi disponibili.")
+# --- DISCLAIMER STANDARD ---
+DISCLAIMER = "\n⚠️ <i>La posizione sulla mappa indica l'ingresso del padiglione.\nPer l'ubicazione esatta, controlla i cartelli o l'app ufficiale Polito.</i>"
 
-
-async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    testo = (
-        "🤖 <b>GUIDA AI COMANDI</b> 🤖\n\n"
-        "🔹 <b>/auleAll</b> (oppure <b>/aule</b>)\n"
-        "Ti mostra l'elenco completo di tutte le aule libere in questo momento. "
-        "Le aule segnate con 🔌 hanno le prese elettriche disponibili.\n\n"
-        "🔹 <b>/prese</b>\n"
-        "Filtra la lista e ti mostra <u>SOLO</u> le aule libere che hanno le prese a tua disposizione. "
-        "Usalo quando hai il PC scarico!😉\n\n"
-        "🔹 <b>/maratona</b>\n"
-        "Mostra le aule che hanno liberi due turni consecutivi (tot. 3h)"
-        "🔹 <b>/help</b>\n"
-        "Mostra questo messaggio di aiuto🆘.\n\n"
-        "<i>Presto arriveranno nuove funzioni... stay tuned!</i> 🚀"
-    )
-    await update.message.reply_text(testo, parse_mode='HTML')
-
-
-# --- NUOVO COMANDO SUGGEST ---
-async def suggest(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # L'utente scrive: /suggest bla bla bla
-    # context.args contiene tutto quello che c'è dopo il comando
-    messaggio_utente = " ".join(context.args)
-    
-    if not messaggio_utente:
-        await update.message.reply_text("Scrivi il suggerimento dopo il comando.\nEs: <code>/suggest Aggiungi le mappe!</code>", parse_mode='HTML')
-        return
-
-    # Recuperiamo il TUO ID dalle variabili d'ambiente (o scrivilo qui se vuoi fare veloce)
-    ADMIN_ID = os.getenv("ADMIN_ID") 
-    
-    if not ADMIN_ID:
-        await update.message.reply_text("⚠️ Errore: L'admin non ha configurato il suo ID.")
-        return
-
-    # Costruiamo il messaggio da inviare a TE
-    username = update.effective_user.username or "Anonimo"
-    testo_per_admin = f"💡 <b>NUOVO SUGGERIMENTO</b>\nDa: @{username}\n\n<i>{messaggio_utente}</i>"
-    
-    try:
-        # Il bot manda il messaggio a TE
-        await context.bot.send_message(chat_id=ADMIN_ID, text=testo_per_admin, parse_mode='HTML')
-        # Conferma all'utente
-        await update.message.reply_text("✅ Messaggio inviato allo sviluppatore. Grazie!")
-    except Exception as e:
-        await update.message.reply_text(f"❌ Impossibile inviare: {e}")
-
+# --- COMANDI ---
 
 async def aule_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🔎 Scarico tutte le aule...")
-    dati = scraper.scarica_dati_swas() # Chiamo lo scraper
+    dati = scraper.scarica_dati_swas()
     
     if not dati:
         await update.message.reply_text("❌ Errore sito Polito.")
         return
 
-    messaggio = ["🎓 **TUTTE LE AULE LIBERE** 🎓\n"]
+    messaggio = ["🎓 **TUTTE LE AULE LIBERE** 🎓\n(Clicca sul nome per la mappa)\n"]
     
     for orario, lista_aule in dati.items():
-        # Uso la funzione di utils per mettere le icone
         nomi_belli = [utils.formatta_nome(a) for a in lista_aule]
         testo = ", ".join(nomi_belli)
-        
-        messaggio.append(f"🕒 {orario}")
-        messaggio.append(f"🏫 {testo}")
-        messaggio.append("───────────────")
+        messaggio.append(f"🕒 {orario}\n🏫 {testo}\n───────────────")
+    
+    # Aggiungiamo il disclaimer alla fine
+    messaggio.append(DISCLAIMER)
         
     await invia_lungo(update, "\n".join(messaggio))
-
 
 async def prese(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🔌 Filtro solo prese...")
     dati = scraper.scarica_dati_swas()
     if not dati: return
 
-    messaggio = ["🔌 **SOLO CON PRESE** 🔌\n"]
+    messaggio = ["🔌 **SOLO CON PRESE** 🔌\n(Clicca sul nome per la mappa)\n"]
     
     for orario, lista_aule in dati.items():
-        # Filtro: tengo solo se utils dice che ha la presa
-        lista_prese = [f"<b>{a}</b>" for a in lista_aule if utils.controlla_presa(a)]
+        lista_prese = [utils.formatta_nome(a) for a in lista_aule if utils.controlla_presa(a)]
         
         if lista_prese:
-            messaggio.append(f"🕒 {orario}")
-            messaggio.append(f"🏫 {', '.join(lista_prese)}")
-            messaggio.append("───────────────")
+            messaggio.append(f"🕒 {orario}\n🏫 {', '.join(lista_prese)}\n───────────────")
             
+    messaggio.append(DISCLAIMER)
     await invia_lungo(update, "\n".join(messaggio))
-
 
 async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🏃‍♂️ Calcolo Maratona Studio...")
     dati = scraper.scarica_dati_swas()
     
     if not dati or len(dati) < 2:
-        await update.message.reply_text("⚠️ Troppe poche fasce orarie per una maratona oggi.")
+        await update.message.reply_text("⚠️ Troppe poche fasce orarie oggi.")
         return
 
     orari = list(dati.keys())
@@ -127,8 +71,6 @@ async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for i in range(len(orari) - 1):
         ora_curr = orari[i]
         ora_next = orari[i+1]
-        
-        # Intersezione matematica dei due elenchi
         comuni = list(set(dati[ora_curr]).intersection(set(dati[ora_next])))
         comuni.sort()
         
@@ -137,73 +79,93 @@ async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
             nomi = [utils.formatta_nome(a) for a in comuni]
             start = ora_curr.split('-')[0]
             end = ora_next.split('-')[1]
-            
-            messaggio.append(f"🔥 **{start} -> {end}**")
-            messaggio.append(f"Aule: {', '.join(nomi)}")
-            messaggio.append("───────────────")
+            messaggio.append(f"🔥 **{start} -> {end}**\n📍 {', '.join(nomi)}\n───────────────")
     
-    if not trovato: messaggio.append("😢 Nessuna maratona possibile oggi.")
+    if not trovato: 
+        messaggio.append("😢 Nessuna maratona possibile oggi.")
+    else:
+        messaggio.append(DISCLAIMER)
+        
     await invia_lungo(update, "\n".join(messaggio))
 
-# Funzione helper per mandare messaggi lunghi
-# --- GESTIONE MESSAGGI LUNGHI (VERSIONE SMART ESTETICA) ---
+async def suggest(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    messaggio_utente = " ".join(context.args)
+    if not messaggio_utente:
+        await update.message.reply_text("⚠️ Scrivi il tuo messaggio dopo il comando.", parse_mode='HTML')
+        return
+
+    if not ADMIN_ID:
+        await update.message.reply_text("⚠️ Funzione non configurata.")
+        return
+
+    username = update.effective_user.username or update.effective_user.first_name
+    report = f"💡 <b>NUOVO SUGGERIMENTO</b>\nUtente: @{username}\n\n<i>{messaggio_utente}</i>"
+    
+    try:
+        await context.bot.send_message(chat_id=ADMIN_ID, text=report, parse_mode='HTML')
+        await update.message.reply_text("✅ Inviato allo sviluppatore!")
+    except Exception as e:
+        await update.message.reply_text("❌ Errore invio.")
+
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    testo = (
+        "🤖 <b>GUIDA AI COMANDI</b> 🤖\n\n"
+        "🔹 <b>/start</b>\n"
+        "Avvia il bot dall'inizio\n\n"
+        "🔹 <b>/help</b>\n"
+        "Mostra questo messaggio di aiuto🆘.\n\n"
+        "🔹 <b>/suggest ..... </b>\n"
+        "Invia un suggerimento al mio admin 💡\n\n"
+        "🔹 <b>/auleAll</b> (oppure <b>/aule</b> oppure <b>/auleall</b>)\n"
+        "Ti mostra l'elenco completo di tutte le aule libere in questo momento. "
+        "Le aule segnate con 🔌 hanno le prese elettriche disponibili.\n\n"
+        "🔹 <b>/prese</b>\n"
+        "Filtra la lista e ti mostra <u>SOLO</u> le aule libere che hanno le prese a tua disposizione. "
+        "Usalo quando hai il PC scarico!😉\n\n"
+        "🔹 <b>/maratona</b>\n"
+        "Mostra le aule che hanno liberi due turni consecutivi (tot. 3h)"
+        
+       
+        "<i>Presto arriveranno nuove funzioni... stay tuned!</i> 🚀"
+    )
+    await update.message.reply_text(testo, parse_mode='HTML')
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_name = update.effective_user.first_name
+    await update.message.reply_text(f"Ciao {user_name}! Ecco tutti i comandi disponibili ⬇️")
+
 async def invia_lungo(update, testo):
-    # Definisci il separatore ESATTO che usi nel codice (copialo dalla riga messaggio.append)
     SEPARATORE = "───────────────"
-    
-    # 1. Spezziamo tutto il testo enorme in una lista di blocchi usando il separatore
-    # Ogni 'blocco' conterrà quindi: Orario + Elenco Aule
     blocchi = testo.split(SEPARATORE)
-    
     chunk = ""
-    
     for blocco in blocchi:
-        # Pulizia: se lo split crea un blocco vuoto (spesso succede alla fine), lo saltiamo
-        if not blocco.strip():
-            continue
-            
-        # 2. Ricostruiamo il pezzo intero rimettendo il separatore che lo split aveva tolto
-        # .strip() toglie spazi vuoti extra all'inizio/fine del blocco per ordine
+        if not blocco.strip(): continue
         pezzo_completo = blocco.strip() + "\n" + SEPARATORE + "\n"
-        
-        # 3. Controllo lunghezza: Se aggiungendo questo pezzo superiamo i 4000...
         if len(chunk) + len(pezzo_completo) > 4000:
-            # ...Inviamo subito quello che abbiamo accumulato finora
             await update.message.reply_text(chunk, parse_mode='HTML')
-            # E ricominciamo da capo con il pezzo attuale
             chunk = ""
-        
-        # 4. Aggiungiamo il pezzo al messaggio corrente
         chunk += pezzo_completo
-        
-    # 5. Se alla fine del giro è avanzato qualcosa, inviamolo
     if chunk:
         await update.message.reply_text(chunk, parse_mode='HTML')
 
-
-
-# --- AVVIO ---
 if __name__ == '__main__':
     print("💤 Pausa avvio...")
     time.sleep(5)
     
     if not TOKEN: exit()
 
-    # Avvio i servizi di utilità
-    utils.carica_prese()          # Carica il JSON
-    utils.avvia_server_background() # Avvia il finto server per Render
+    utils.carica_prese()
+    utils.avvia_server_background()
 
     app = ApplicationBuilder().token(TOKEN).build()
     
     app.add_handler(CommandHandler('start', start))
     app.add_handler(CommandHandler('help', help_cmd))
-    app.add_handler(CommandHandler('suggest', suggest))
-    
-    app.add_handler(CommandHandler('auleall', aule_all))
+    app.add_handler(CommandHandler('auleAll', aule_all))
     app.add_handler(CommandHandler('aule', aule_all))
     app.add_handler(CommandHandler('prese', prese))
     app.add_handler(CommandHandler('maratona', maratona))
-
+    app.add_handler(CommandHandler('suggest', suggest))
     
     print("🤖 Bot Avviato!")
     app.run_polling()
