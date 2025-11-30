@@ -156,8 +156,13 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(testo, parse_mode='HTML')
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Ciao! Usa /help per info.")
-
+    bot_user = await context.bot.get_me()
+    bot_name = bot_user.first_name if bot_user.first_name else "N/A"
+    bot_username = bot_user.username if bot_user.username else "N/A"
+    user_name = update.effective_user.first_name
+    await update.message.reply_text(f"Ciao {user_name}! Mi presento sono {bot_name}!\n@{bot_username} il bot che ti dice quali aule sono libere nelle Sede Centrale del PoliTo\nEcco tutti i comandi disponibili ⬇️\n")
+    
+    await help_cmd(update, context)
 
 # --- UTILS MESSAGGI ---
 async def invia_lungo(update, testo):
@@ -191,7 +196,7 @@ async def invia_lungo(update, testo):
                 
                 if len(messaggio_parziale) + len(testo_aula) > 4000:
                     await update.message.reply_text(messaggio_parziale, parse_mode='HTML', disable_web_page_preview=True)
-                    messaggio_parziale = "<i>(continua)...</i> " + testo_aula
+                    messaggio_parziale = "<i>(continua fascia oraria precedente)...\n</i> " + testo_aula
                 else:
                     messaggio_parziale += testo_aula
             
