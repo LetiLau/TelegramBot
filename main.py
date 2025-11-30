@@ -113,12 +113,25 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"Ciao {user_name}! Ecco tutti i comandi disponibili.")
 
 # Funzione helper per mandare messaggi lunghi
+# --- GESTIONE MESSAGGI LUNGHI (VERSIONE SMART) ---
 async def invia_lungo(update, testo):
-    if len(testo) > 4000:
-        for x in range(0, len(testo), 4000):
-            await update.message.reply_text(testo[x:x+4000], parse_mode='HTML')
-    else:
-        await update.message.reply_text(testo, parse_mode='HTML')
+    # Invece di tagliare a caso, dividiamo per righe
+    righe = testo.split('\n')
+    chunk = ""
+    
+    for riga in righe:
+        # Se aggiungere la prossima riga supera il limite...
+        if len(chunk) + len(riga) + 1 > 4000:
+            # ...inviamo quello che abbiamo accumulato finora
+            await update.message.reply_text(chunk, parse_mode='HTML')
+            chunk = ""
+        
+        # Aggiungiamo la riga al blocco corrente
+        chunk += riga + "\n"
+        
+    # Inviamo l'ultimo pezzo rimasto (se c'è)
+    if chunk:
+        await update.message.reply_text(chunk, parse_mode='HTML')
 
 # --- AVVIO ---
 if __name__ == '__main__':
