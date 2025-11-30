@@ -15,41 +15,52 @@ LINK_MIRAFIORI = "https://maps.app.goo.gl/euYrwHKqLcFAw5wbA"
 
 def get_link_aula(nome_aula):
     """
-    Riceve il nome (es. 'Aula 5N', '12I') e restituisce il link Maps all'ingresso migliore.
+    Restituisce il link all'ingresso corretto gestendo le eccezioni.
     """
-    nome = nome_aula.upper().strip()
+    nome = nome_aula.upper().strip() # Es: "LAIB 1B", "R4B"
     
     # --- 1. GESTIONE SEDI ESTERNE ---
-    if "LINGOTTO" in nome:
-        return LINK_LINGOTTO
-    if "MIRAFIORI" in nome:
-        return LINK_MIRAFIORI
+    if "LINGOTTO" in nome: return LINK_LINGOTTO
+    if "MIRAFIORI" in nome: return LINK_MIRAFIORI
 
-    # --- 2. PADIGLIONI SPECIFICI (CITTADELLA/SUD) ---
+    # --- 2. GESTIONE CASI SPECIALI (LAIB) ---
+    if "LAIB" in nome:
+        # Se c'è una T (es: LAIB 1T), va al padiglione T
+        if "T" in nome:
+            return LINK_T
+        
+        # Se c'è una B EXTRA oltre a quella della parola LAI(B) (es: LAIB 1B)
+        # Contiamo le B: "LAIB 1" ne ha 1. "LAIB 1B" ne ha 2.
+        if nome.count("B") > 1:
+            return LINK_N_M # Cittadella (M)
+            
+        # Tutti gli altri LAIB (LAIB 1, LAIB 2...) vanno in centrale
+        return LINK_CENTRALE
+
+    # --- 3. PADIGLIONI SPECIFICI ---
     
-    # Aule N e M (Passano per N)
-    if "N" in nome or "M" in nome:
-        # Escludiamo casi strani se ci fossero, ma N e M sono uniche
-        return LINK_N_M
-        
-    # Aule P
-    if "P" in nome:
-        return LINK_P
-        
-    # Aule T
-    if "T" in nome:
-        return LINK_T
-        
-    # Aule R
-    if "R" in nome:
+    # Aule R (R1, R2, R4b...)
+    # Basta che ci sia "R" e un numero. "R4B" contiene R.
+    if "R" in nome and any(c.isdigit() for c in nome):
         return LINK_R
-        
-    # Aule I (Informatica)
-    # ATTENZIONE: "LAIB" contiene la lettera "I", ma sono nella sede centrale solitamente.
-    # Quindi diamo il link I solo se c'è "I" MA NON c'è "LAIB"
-    if "I" in nome and "LAIB" not in nome:
+
+    # Aule T (1T, 2T...)
+    if "T" in nome: 
+        return LINK_T
+
+    # Aule N e M (Via Boggio)
+    # Escludiamo SALA per sicurezza
+    if ("N" in nome or "M" in nome) and "SALA" not in nome:
+         return LINK_N_M
+
+    # Aule P
+    if "P" in nome: 
+        return LINK_P
+
+    # Aule I (Informatica - Sede Sud)
+    if "I" in nome:
         return LINK_I
 
-    # --- 3. DEFAULT: SEDE CENTRALE (Aule 1, 8, 12A, 5S, LAIB, Sale studio) ---
-    # Se non è nessuno dei precedenti, lo mandiamo in Corso Duca
+    # --- 4. DEFAULT (Sede Centrale) ---
+    # Aule 1, 8, 12A, 5S, Sale Studio...
     return LINK_CENTRALE
