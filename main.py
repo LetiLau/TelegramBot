@@ -24,9 +24,10 @@ SEPARATORE = "───────────────"
 AVVIO = "🤖 Bot Avviato!"
 
 # Intestazioni dei messaggi
-HEADER_AULE_ALL = "🎓 ** TUTTE LE AULE LIBERE ** 🎓\n"
-HEADER_PRESE    = "🔌 ** SOLO CON PRESE ** 🔌\n"
-HEADER_MARATONA = "🏆 ** MARATONA STUDIO ** 🏆\n(Aule libere per più turni consecutivi)\n"
+#ATTENZIONE GLI HEADER SONO STUDIATI PER ESSERE SOLO DI UNA SOLA RIGA. QUINDI SE SI VUOLE AGGIUNGERE TESTO VA MODIFICATA AD ESEMPIO invia_lungo
+HEADER_AULE_ALL = "🎓  **TUTTE LE AULE LIBERE**  🎓\n"
+HEADER_PRESE    = "🔌  **SOLO CON PRESE**  🔌\n"
+HEADER_MARATONA = "🏆  **MARATONA STUDIO**  🏆\n"
 
 # Disclaimer finale
 DISCLAIMER = "\n⚠️ <i>La posizione sulla mappa indica l'ingresso del padiglione dell'aula o la zona di riferimento più vicina alla sua effettiva posizione.\nPer l'ubicazione esatta, controlla i cartelli o l'app ufficiale PoliTO.</i>"
@@ -34,7 +35,7 @@ DISCLAIMER = "\n⚠️ <i>La posizione sulla mappa indica l'ingresso del padigli
 # Icone varie
 ICON_OROLOGIO = "🕒"
 ICON_SCUOLA   = "🏫📍(Clicca sull'aula per ottenere la posizione)"
-ICON_FUOCO    = "🔥"
+ICON_FUOCO    = "🔥 "
 ICON_PIN      = "" #NON RIMUOVERE, manderebbe in tilt il messaggio
 
 # ---------------------------------------------
@@ -104,7 +105,7 @@ async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
             start = ora_curr.split('-')[0]
             end = ora_next.split('-')[1]
             
-            blocco = f"{ICON_FUOCO} **{start} -> {end}**\n{ICON_PIN} {', '.join(nomi)}\n{SEPARATORE}"
+            blocco = f"{ICON_FUOCO} **{start} -> {end}** \n{ICON_PIN} {', '.join(nomi)}\n{SEPARATORE}"
             messaggio.append(blocco)
     
     if not trovato: 
@@ -189,6 +190,10 @@ async def invia_lungo(update, testo):
             
             # Qui usiamo l'icona scuola definita in alto
             messaggio_parziale = intestazione + f"{ICON_SCUOLA} "
+
+            #SISTEMATORE SEMPLICE DEL TESTO ma solo per invia_lungo e per HEADER_MARATONA ---> AGGIUNGERE ALTRI
+            if HEADER_MARATONA in messaggio_parziale
+                messaggio_parziale += "\n(Aule libere per più turni consecutivi)\n"
             
             for i, aula in enumerate(lista_aule):
                 aula = aula.strip()
