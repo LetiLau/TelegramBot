@@ -192,7 +192,7 @@ async def invia_lungo(update, testo):
             messaggio_parziale = intestazione + f"{ICON_SCUOLA} "
 
             #SISTEMATORE SEMPLICE DEL TESTO ma solo per invia_lungo e per HEADER_MARATONA ---> AGGIUNGERE ALTRI
-            if HEADER_MARATONA in messaggio_parziale
+            if HEADER_MARATONA in messaggio_parziale:
                 messaggio_parziale += "\n(Aule libere per più turni consecutivi)\n"
             
             for i, aula in enumerate(lista_aule):
