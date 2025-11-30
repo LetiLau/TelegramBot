@@ -10,7 +10,7 @@ import mappe
 
 # --- 🎨 SEZIONE ESTETICA (MODIFICA QUI) 🎨 ---
 ICONA_PRESA = "🔌"           # L'emoji per le prese
-ICONA_LINK = "📍Clicca sull'aula per ottenere la posizione\n"              # Vuoi un'icona prima del nome? (es. "📍") Lascia vuoto se no.
+ICONA_LINK = ""              # Vuoi un'icona prima del nome? (es. "📍") Lascia vuoto se no.
 USA_GRASSETTO_PRESA = True   # True = Grassetto se ha presa. False = Testo normale.
 # ---------------------------------------------
 
