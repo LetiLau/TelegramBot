@@ -141,7 +141,7 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Avvia il bot dall'inizio\n\n"
         "🔹 <b>/help</b>\n"
         "Mostra questo messaggio di aiuto🆘.\n\n"
-        "🔹 <b>/suggest "your message" </b>\n"
+        "🔹 <b>/suggest 'your message' </b>\n"
         "Invia un suggerimento al mio admin 💡\n\n"
         "🔹 <b>/auleAll</b> (oppure <b>/aule</b> oppure <b>/auleall</b>)\n"
         "Ti mostra l'elenco completo di tutte le aule libere in questo momento. "
