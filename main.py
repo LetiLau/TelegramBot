@@ -33,9 +33,9 @@ DISCLAIMER = "\n⚠️ <i>La posizione sulla mappa indica l'ingresso del padigli
 
 # Icone varie
 ICON_OROLOGIO = "🕒"
-ICON_SCUOLA   = "🏫"
+ICON_SCUOLA   = "🏫📍(Clicca sull'aula per ottenere la posizione)"
 ICON_FUOCO    = "🔥"
-ICON_PIN      = "📍"
+ICON_PIN      = "" #NON RIMUOVERE, manderebbe in tilt il messaggio
 
 # ---------------------------------------------
 
