@@ -40,6 +40,7 @@ async def aule_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
     await invia_lungo(update, "\n".join(messaggio))
 
+
 async def prese(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🔌 Filtro solo prese...")
     dati = scraper.scarica_dati_swas()
@@ -48,13 +49,16 @@ async def prese(update: Update, context: ContextTypes.DEFAULT_TYPE):
     messaggio = ["🔌 **SOLO CON PRESE** 🔌\n(Clicca sul nome per la mappa)\n"]
     
     for orario, lista_aule in dati.items():
-        lista_prese = [utils.formatta_nome(a) for a in lista_aule if utils.controlla_presa(a)]
+        # --- MODIFICA QUI SOTTO: mostra_icona=False ---
+        lista_prese = [utils.formatta_nome(a, mostra_icona=False) for a in lista_aule if utils.controlla_presa(a)]
+        # ----------------------------------------------
         
         if lista_prese:
             messaggio.append(f"🕒 {orario}\n🏫 {', '.join(lista_prese)}\n───────────────")
             
-    messaggio.append(DISCLAIMER)
+    messaggio.append("\n⚠️ <i>La posizione sulla mappa indica l'ingresso del padiglione.</i>")
     await invia_lungo(update, "\n".join(messaggio))
+    
 
 async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🏃‍♂️ Calcolo Maratona Studio...")
@@ -137,41 +141,77 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name = update.effective_user.first_name
     await update.message.reply_text(f"Ciao {user_name}! Ecco tutti i comandi disponibili ⬇️")
 
-# --- GESTIONE MESSAGGI LUNGHI (FIX DOMENICA) ---
+
+# --- GESTIONE MESSAGGI LUNGHI (VERSIONE DEFINITIVA) ---
 async def invia_lungo(update, testo):
     SEPARATORE = "───────────────"
+    
+    # 1. Dividiamo tutto in blocchi orari (ogni blocco è un orario completo)
     blocchi = testo.split(SEPARATORE)
-    chunk = ""
+    chunk = "" # Qui accumuliamo il testo da inviare
     
     for blocco in blocchi:
         if not blocco.strip(): continue
         
+        # Ricostruiamo il blocco con il separatore estetico
         pezzo_completo = blocco.strip() + "\n" + SEPARATORE + "\n"
         
-        # CASO SPECIALE DOMENICA: Il singolo blocco è GIGANTE (supera 4000 da solo)
+        # --- CASO A: Il blocco è ENORME (Domenica) ---
+        # Da solo supera il limite massimo. Dobbiamo spezzarlo internamente.
         if len(pezzo_completo) > 4000:
-            # 1. Se avevamo accumulato qualcosa prima, inviamolo subito
+            # Prima svuotiamo il buffer se c'era roba vecchia
             if chunk:
-                await update.message.reply_text(chunk, parse_mode='HTML')
+                await update.message.reply_text(chunk, parse_mode='HTML', disable_web_page_preview=True)
                 chunk = ""
             
-            # 2. Il blocco gigante lo dobbiamo spezzare brutalmente in più messaggi
-            # perché Telegram non accetta un messaggio > 4096
-            for x in range(0, len(pezzo_completo), 4000):
-                await update.message.reply_text(pezzo_completo[x:x+4000], parse_mode='HTML')
+            # Ora operiamo sul mostro. Lo dividiamo per righe prima
+            righe = pezzo_completo.split('\n')
+            intestazione = righe[0] + "\n" # Es: "🕒 08:00 - 23:00"
             
-            continue # Passiamo al prossimo blocco
+            # Ricostruiamo il corpo delle aule (tutto tranne la prima e l'ultima riga)
+            corpo_aule = "\n".join(righe[1:-2]) 
+            
+            # Dividiamo le aule usando la virgola come bisturi sicuro
+            # (Così non tagliamo mai a metà un link HTML <a href...>)
+            lista_aule = corpo_aule.split(',')
+            
+            messaggio_parziale = intestazione + "🏫 "
+            
+            for i, aula in enumerate(lista_aule):
+                aula = aula.strip()
+                # Se l'aula ha un link, è lunga. Aggiungiamo virgola se non è l'ultima
+                testo_aula = aula + (", " if i < len(lista_aule)-1 else "")
+                
+                # Se aggiungendo questa aula sforo il limite...
+                if len(messaggio_parziale) + len(testo_aula) > 4000:
+                    # INVIO IL PEZZO
+                    await update.message.reply_text(messaggio_parziale, parse_mode='HTML', disable_web_page_preview=True)
+                    # E inizio il pezzo nuovo (senza rimettere l'orario, o mettendolo se vuoi)
+                    messaggio_parziale = "<i>(continua fascia precedente)...</i> " + testo_aula
+                else:
+                    messaggio_parziale += testo_aula
+            
+            # Inviamo l'ultimo pezzo del mostro con il separatore finale
+            if messaggio_parziale:
+                await update.message.reply_text(messaggio_parziale + "\n" + SEPARATORE, parse_mode='HTML', disable_web_page_preview=True)
+                
+            continue # Passiamo al prossimo blocco orario
 
-        # CASO NORMALE: Il blocco ci sta, ma sommato al resto supera il limite
+        # --- CASO B: Il blocco è NORMALE ---
+        # Se sommato a quello che ho già supera il limite, invio il vecchio e inizio il nuovo
         if len(chunk) + len(pezzo_completo) > 4000:
-            await update.message.reply_text(chunk, parse_mode='HTML')
+            await update.message.reply_text(chunk, parse_mode='HTML', disable_web_page_preview=True)
             chunk = ""
         
+        # Aggiungo al buffer
         chunk += pezzo_completo
         
-    # Invia l'ultimo pezzetto rimasto
+    # Alla fine, se è rimasto qualcosa nel buffer, invialo
     if chunk:
-        await update.message.reply_text(chunk, parse_mode='HTML')
+        await update.message.reply_text(chunk, parse_mode='HTML', disable_web_page_preview=True)
+
+
+
 
 if __name__ == '__main__':
     print("💤 Pausa avvio...")
