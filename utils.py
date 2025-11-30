@@ -25,22 +25,28 @@ def carica_prese():
         AULE_CON_PRESE = set()
 
 # --- FORMATTAZIONE TESTO ---
-def formatta_nome(nome):
-    """Aggiunge grassetto, icona presa e LINK preciso"""
-    
-    # Check Presa
+def formatta_nome(nome, mostra_icona=True):
+    """
+    Aggiunge grassetto e link.
+    mostra_icona=True -> Aggiunge 🔌 (per /auleAll)
+    mostra_icona=False -> Niente icona (per /prese)
+    """
+    import mappe # Assicurati che mappe sia importato in cima al file
+
     ha_presa = (nome in AULE_CON_PRESE) or (f"Aula {nome}" in AULE_CON_PRESE)
-    
-    # Genera Link usando il file mappe.py
     link_maps = mappe.get_link_aula(nome)
     
-    if ha_presa:
-        return f'<a href="{link_maps}"><b>{nome}</b></a>🔌'
-    else:
-        return f'<a href="{link_maps}">{nome}</a>'
+    # Costruiamo il link HTML
+    html_nome = f'<a href="{link_maps}"><b>{nome}</b></a>' if ha_presa else f'<a href="{link_maps}">{nome}</a>'
+
+    if ha_presa and mostra_icona:
+        return f'{html_nome}🔌'
+    
+    return html_nome
 
 def controlla_presa(nome):
     return (nome in AULE_CON_PRESE) or (f"Aula {nome}" in AULE_CON_PRESE)
+
 
 # --- SERVER RENDER ---
 class HealthCheckHandler(BaseHTTPRequestHandler):
