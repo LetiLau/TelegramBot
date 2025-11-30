@@ -92,7 +92,7 @@ async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await invia_lungo(update, "\n".join(messaggio))
 
 async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    testo = "
+    testo = (
         "🤖 <b>GUIDA AI COMANDI</b> 🤖\n\n"
         "🔹 <b>/auleAll</b> (oppure <b>/aule</b>)\n"
         "Ti mostra l'elenco completo di tutte le aule libere in questo momento. "
@@ -104,7 +104,8 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Mostra le aule che hanno liberi due turni consecutivi (tot. 3h)"
         "🔹 <b>/help</b>\n"
         "Mostra questo messaggio di aiuto🆘.\n\n"
-        "<i>Presto arriveranno nuove funzioni... stay tuned!</i> 🚀" "
+        "<i>Presto arriveranno nuove funzioni... stay tuned!</i> 🚀"
+    )
     await update.message.reply_text(testo, parse_mode='HTML')
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
