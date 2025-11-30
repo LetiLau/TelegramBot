@@ -6,9 +6,13 @@ import json
 import os
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
-
-# Importiamo il nuovo file mappe
 import mappe 
+
+# --- 🎨 SEZIONE ESTETICA (MODIFICA QUI) 🎨 ---
+ICONA_PRESA = "🔌"           # L'emoji per le prese
+ICONA_LINK = "📍Clicca sull'aula per ottenere la posizione\n"              # Vuoi un'icona prima del nome? (es. "📍") Lascia vuoto se no.
+USA_GRASSETTO_PRESA = True   # True = Grassetto se ha presa. False = Testo normale.
+# ---------------------------------------------
 
 # --- GESTIONE FILE JSON ---
 AULE_CON_PRESE = set()
@@ -26,27 +30,29 @@ def carica_prese():
 
 # --- FORMATTAZIONE TESTO ---
 def formatta_nome(nome, mostra_icona=True):
-    """
-    Aggiunge grassetto e link.
-    mostra_icona=True -> Aggiunge 🔌 (per /auleAll)
-    mostra_icona=False -> Niente icona (per /prese)
-    """
-    import mappe # Assicurati che mappe sia importato in cima al file
-
+    """Applica lo stile definito nella Sezione Estetica in alto"""
+    
+    # Check Presa
     ha_presa = (nome in AULE_CON_PRESE) or (f"Aula {nome}" in AULE_CON_PRESE)
     link_maps = mappe.get_link_aula(nome)
     
-    # Costruiamo il link HTML
-    html_nome = f'<a href="{link_maps}"><b>{nome}</b></a>' if ha_presa else f'<a href="{link_maps}">{nome}</a>'
-
-    if ha_presa and mostra_icona:
-        return f'{html_nome}🔌'
+    # Preparo il nome (aggiungo eventuale icona link prima)
+    testo_visibile = f"{ICONA_LINK}{nome}"
     
-    return html_nome
+    # Logica Grassetto
+    if ha_presa and USA_GRASSETTO_PRESA:
+        html = f'<a href="{link_maps}"><b>{testo_visibile}</b></a>'
+    else:
+        html = f'<a href="{link_maps}">{testo_visibile}</a>'
+
+    # Aggiunta Icona Presa (solo se richiesto e se c'è la presa)
+    if ha_presa and mostra_icona:
+        return f'{html}{ICONA_PRESA}'
+    
+    return html
 
 def controlla_presa(nome):
     return (nome in AULE_CON_PRESE) or (f"Aula {nome}" in AULE_CON_PRESE)
-
 
 # --- SERVER RENDER ---
 class HealthCheckHandler(BaseHTTPRequestHandler):
