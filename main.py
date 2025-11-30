@@ -113,26 +113,39 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"Ciao {user_name}! Ecco tutti i comandi disponibili.")
 
 # Funzione helper per mandare messaggi lunghi
-# --- GESTIONE MESSAGGI LUNGHI (VERSIONE SMART) ---
+# --- GESTIONE MESSAGGI LUNGHI (VERSIONE SMART ESTETICA) ---
 async def invia_lungo(update, testo):
-    # Invece di tagliare a caso, dividiamo per righe
-    righe = testo.split('\n')
+    # Definisci il separatore ESATTO che usi nel codice (copialo dalla riga messaggio.append)
+    SEPARATORE = "───────────────"
+    
+    # 1. Spezziamo tutto il testo enorme in una lista di blocchi usando il separatore
+    # Ogni 'blocco' conterrà quindi: Orario + Elenco Aule
+    blocchi = testo.split(SEPARATORE)
+    
     chunk = ""
     
-    for riga in righe:
-        # Se aggiungere la prossima riga supera il limite...
-        if len(chunk) + len(riga) + 1 > 4000:
-            # ...inviamo quello che abbiamo accumulato finora
+    for blocco in blocchi:
+        # Pulizia: se lo split crea un blocco vuoto (spesso succede alla fine), lo saltiamo
+        if not blocco.strip():
+            continue
+            
+        # 2. Ricostruiamo il pezzo intero rimettendo il separatore che lo split aveva tolto
+        # .strip() toglie spazi vuoti extra all'inizio/fine del blocco per ordine
+        pezzo_completo = blocco.strip() + "\n" + SEPARATORE + "\n"
+        
+        # 3. Controllo lunghezza: Se aggiungendo questo pezzo superiamo i 4000...
+        if len(chunk) + len(pezzo_completo) > 4000:
+            # ...Inviamo subito quello che abbiamo accumulato finora
             await update.message.reply_text(chunk, parse_mode='HTML')
+            # E ricominciamo da capo con il pezzo attuale
             chunk = ""
         
-        # Aggiungiamo la riga al blocco corrente
-        chunk += riga + "\n"
+        # 4. Aggiungiamo il pezzo al messaggio corrente
+        chunk += pezzo_completo
         
-    # Inviamo l'ultimo pezzo rimasto (se c'è)
+    # 5. Se alla fine del giro è avanzato qualcosa, inviamolo
     if chunk:
         await update.message.reply_text(chunk, parse_mode='HTML')
-
 # --- AVVIO ---
 if __name__ == '__main__':
     print("💤 Pausa avvio...")
