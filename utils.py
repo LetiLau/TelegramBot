@@ -7,6 +7,9 @@ import os
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+# Importiamo il nuovo file mappe
+import mappe 
+
 # --- GESTIONE FILE JSON ---
 AULE_CON_PRESE = set()
 
@@ -18,24 +21,28 @@ def carica_prese():
             AULE_CON_PRESE = set(lista)
             print(f"✅ Utils: Caricate {len(AULE_CON_PRESE)} aule con prese.")
     except Exception as e:
-        print(f"⚠️ Utils: Errore caricamento JSON ({e}). Uso set vuoto.")
+        print(f"⚠️ Utils: Errore JSON ({e}). Uso set vuoto.")
         AULE_CON_PRESE = set()
 
 # --- FORMATTAZIONE TESTO ---
 def formatta_nome(nome):
-    """Aggiunge grassetto e icona se l'aula ha la presa"""
-    # Controlla sia "1" che "Aula 1"
+    """Aggiunge grassetto, icona presa e LINK preciso"""
+    
+    # Check Presa
     ha_presa = (nome in AULE_CON_PRESE) or (f"Aula {nome}" in AULE_CON_PRESE)
     
+    # Genera Link usando il file mappe.py
+    link_maps = mappe.get_link_aula(nome)
+    
     if ha_presa:
-        return f"<b>{nome}</b>🔌"
-    return nome
+        return f'<a href="{link_maps}"><b>{nome}</b></a>🔌'
+    else:
+        return f'<a href="{link_maps}">{nome}</a>'
 
 def controlla_presa(nome):
-    """Restituisce True se l'aula ha la presa"""
     return (nome in AULE_CON_PRESE) or (f"Aula {nome}" in AULE_CON_PRESE)
 
-# --- SERVER PER RENDER (Keep-Alive) ---
+# --- SERVER RENDER ---
 class HealthCheckHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -45,7 +52,6 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
 def start_fake_server():
     port = int(os.environ.get("PORT", 8080))
     server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
-    print(f"🌍 Server Fake avviato su porta {port}")
     server.serve_forever()
 
 def avvia_server_background():
