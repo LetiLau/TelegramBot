@@ -3,7 +3,7 @@
 ################################
 import json
 import os
-import mappe 
+from . import mappe 
 
 # --- GESTIONE PERCORSI (FIX PER SOTTOCARTELLE) ---
 # Ottiene il percorso assoluto della cartella dove si trova questo file (utils.py)
