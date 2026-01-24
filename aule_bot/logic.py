@@ -3,7 +3,7 @@ import logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 
-# NOTA I PUNTI PRIMA DEI NOMI: Significano "cerca in questa cartella"
+# Import relativi (corretti per la struttura a cartelle)
 from . import utils
 from . import scraper
 
@@ -14,13 +14,16 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 # --- 🎨 SEZIONE ESTETICA 🎨 ---
 SEPARATORE = "───────────────"
-HEADER_AULE_ALL = "🎓 **TUTTE LE AULE LIBERE** 🎓\n"
-HEADER_PRESE    = "🔌 **SOLO CON PRESE** 🔌\n"
-HEADER_MARATONA = "🏆 **MARATONA STUDIO** 🏆\n" # Nota: Smart Header gestirà le righe sotto
+
+# Qui mettiamo il testo descrittivo, così appare una volta sola in cima
+HEADER_AULE_ALL = "🎓 **TUTTE LE AULE LIBERE** 🎓\n(Clicca sul nome per la mappa)\n"
+HEADER_PRESE    = "🔌 **SOLO CON PRESE** 🔌\n(Clicca sul nome per la mappa)\n"
+HEADER_MARATONA = "🏆 **MARATONA STUDIO** 🏆\n(Aule libere per più turni consecutivi)\n"
 DISCLAIMER = "\n⚠️ <i>La posizione sulla mappa indica l'ingresso del padiglione.\nPer l'ubicazione esatta, controlla i cartelli o l'app ufficiale PoliTO.</i>"
 
+# LE ICONE DEVONO ESSERE SOLO EMOJI (per non rompere la logica di taglio)
 ICON_OROLOGIO = "🕒"
-ICON_SCUOLA   = "🏫"
+ICON_SCUOLA   = "🏫" 
 ICON_FUOCO    = "🔥"
 ICON_PIN      = "📍"
 # -----------------------------
@@ -29,7 +32,7 @@ ICON_PIN      = "📍"
 
 async def aule_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🔎 Scarico tutte le aule...")
-    dati = scraper.scarica_dati_swas() # Scraper è importato dalla stessa cartella ora
+    dati = scraper.scarica_dati_swas() 
     
     if not dati:
         await update.message.reply_text("❌ Errore sito Polito.")
@@ -40,6 +43,8 @@ async def aule_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for orario, lista_aule in dati.items():
         nomi_belli = [utils.formatta_nome(a) for a in lista_aule]
         testo = ", ".join(nomi_belli)
+        
+        # Costruzione pulita: Icona + Spazio + Testo
         blocco = f"{ICON_OROLOGIO} {orario}\n{ICON_SCUOLA} {testo}\n{SEPARATORE}"
         messaggio.append(blocco)
     
@@ -71,7 +76,8 @@ async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     orari = list(dati.keys())
-    messaggio = [HEADER_MARATONA + "(Aule libere per più turni consecutivi)\n"] # Aggiungo qui il sottotitolo
+    # Il sottotitolo è già incluso in HEADER_MARATONA
+    messaggio = [HEADER_MARATONA] 
     trovato = False
 
     for i in range(len(orari) - 1):
@@ -86,6 +92,7 @@ async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
             start = ora_curr.split('-')[0]
             end = ora_next.split('-')[1]
             
+            # Qui usiamo ICON_PIN
             blocco = f"{ICON_FUOCO} **{start} -> {end}**\n{ICON_PIN} {', '.join(nomi)}\n{SEPARATORE}"
             messaggio.append(blocco)
     
@@ -163,16 +170,18 @@ async def invia_lungo(update, testo):
             icona_usata = ""
             
             for i, riga in enumerate(righe):
+                # Cerchiamo l'icona ESATTA (🏫 o 📍)
                 if ICON_SCUOLA in riga: 
                     idx_aule = i
                     icona_usata = ICON_SCUOLA + " "
                     break
-                elif ICON_PIN in riga and ICON_PIN != "": # Controllo che PIN non sia vuoto
+                elif ICON_PIN in riga: 
                     idx_aule = i
                     icona_usata = ICON_PIN + " "
                     break
             
             if idx_aule != -1:
+                # Ripetiamo tutta l'intestazione trovata (incluso il sottotitolo Maratona)
                 intestazione = "\n".join(righe[:idx_aule]) + "\n" + icona_usata
                 corpo_aule = righe[idx_aule].replace(icona_usata, "", 1)
             else:
@@ -205,14 +214,12 @@ async def invia_lungo(update, testo):
     if chunk:
         await update.message.reply_text(chunk, parse_mode='HTML', disable_web_page_preview=True)
 
-# --- FUNZIONE DI SETUP (IMPORTANTE!) ---
-# Questa viene chiamata dal CAPO (main_hub.py)
+# --- FUNZIONE DI SETUP ---
 def setup_bot():
     if not TOKEN:
         print("⚠️ AuleBot: Token mancante!")
         return None
 
-    # Carichiamo le prese qui
     utils.carica_prese()
 
     application = ApplicationBuilder().token(TOKEN).build()
