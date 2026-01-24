@@ -1,0 +1,18 @@
+testo = (
+        "🤖 <b>GUIDA AI COMANDI</b> 🤖\n\n"
+        "🔹 <b>/start</b>\n"
+        "Avvia il bot dall'inizio\n\n"
+        "🔹 <b>/help</b>\n"
+        "Mostra questo messaggio di aiuto🆘.\n\n"
+        "🔹 <b>/suggest 'your message' </b>\n"
+        "Invia un suggerimento al mio admin 💡\n\n"
+        "🔹 <b>/auleAll</b> (oppure <b>/aule</b> oppure <b>/auleall</b>)\n"
+        "Ti mostra l'elenco completo di tutte le aule libere in questo momento. "
+        "Le aule segnate con 🔌 hanno le prese elettriche disponibili.\n\n"
+        "🔹 <b>/prese</b>\n"
+        "Filtra la lista e ti mostra <u>SOLO</u> le aule libere che hanno le prese a tua disposizione. "
+        "Usalo quando hai il PC scarico!😉\n\n"
+        "🔹 <b>/maratona</b>\n"
+        "Mostra le aule che hanno liberi due turni consecutivi (tot. 3h)📚\n\n"
+        "<i>Presto arriveranno nuove funzioni... stay tuned!</i> 🚀"
+    )
