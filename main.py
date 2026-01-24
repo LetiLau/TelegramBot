@@ -165,10 +165,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await help_cmd(update, context)
 
-# --- UTILS MESSAGGI ---
+# --- GESTIONE MESSAGGI LUNGHI (SMART HEADER) ---
 async def invia_lungo(update, testo):
-    # Ora usa la variabile globale definita in alto!
-    # Non devi più cambiarla qui dentro manualmente.
+    # Usa le variabili globali definite in cima al file (SEPARATORE, ecc.)
     blocchi = testo.split(SEPARATORE)
     chunk = ""
     
@@ -177,23 +176,40 @@ async def invia_lungo(update, testo):
         
         pezzo_completo = blocco.strip() + "\n" + SEPARATORE + "\n"
         
-        # CASO MOSTRUOSO (Domenica)
+        # CASO MOSTRUOSO (Blocco troppo grande da solo)
         if len(pezzo_completo) > 4000:
             if chunk:
                 await update.message.reply_text(chunk, parse_mode='HTML', disable_web_page_preview=True)
                 chunk = ""
             
             righe = pezzo_completo.split('\n')
-            intestazione = righe[0] + "\n"
-            corpo_aule = "\n".join(righe[1:-2]) 
-            lista_aule = corpo_aule.split(',')
             
-            # Qui usiamo l'icona scuola definita in alto
-            messaggio_parziale = intestazione + f"{ICON_SCUOLA} "
+            # LOGICA SMART: Cerca l'icona per identificare la fine dell'intestazione
+            idx_aule = -1
+            icona_usata = ""
+            
+            for i, riga in enumerate(righe):
+                # Cerchiamo le icone che usi nelle intestazioni
+                if ICON_SCUOLA in riga: 
+                    idx_aule = i
+                    icona_usata = ICON_SCUOLA + " "
+                    break
+                elif ICON_PIN in riga:
+                    idx_aule = i
+                    icona_usata = ICON_PIN + " "
+                    break
+            
+            if idx_aule != -1:
+                # L'intestazione è tutto ciò che c'è PRIMA dell'icona
+                intestazione = "\n".join(righe[:idx_aule]) + "\n" + icona_usata
+                corpo_aule = righe[idx_aule].replace(icona_usata, "", 1)
+            else:
+                # Fallback se non trova icone
+                intestazione = righe[0] + "\n"
+                corpo_aule = "\n".join(righe[1:-2])
 
-            #SISTEMATORE SEMPLICE DEL TESTO ma solo per invia_lungo e per HEADER_MARATONA ---> AGGIUNGERE ALTRI
-            if HEADER_MARATONA in messaggio_parziale:
-                messaggio_parziale += "\n(Aule libere per più turni consecutivi)\n"
+            lista_aule = corpo_aule.split(',')
+            messaggio_parziale = intestazione
             
             for i, aula in enumerate(lista_aule):
                 aula = aula.strip()
@@ -201,7 +217,7 @@ async def invia_lungo(update, testo):
                 
                 if len(messaggio_parziale) + len(testo_aula) > 4000:
                     await update.message.reply_text(messaggio_parziale, parse_mode='HTML', disable_web_page_preview=True)
-                    messaggio_parziale = "<i>(continua fascia oraria precedente)...\n</i> " + testo_aula
+                    messaggio_parziale = "<i>(continua)...</i> " + testo_aula
                 else:
                     messaggio_parziale += testo_aula
             
