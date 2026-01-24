@@ -1,50 +1,35 @@
-###############################
-# main.py (Il capo): Gestisce Telegram, i comandi e coordina gli altri due.
-###############################
 import os
-import time
 import logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 
-import utils
-import scraper
+# NOTA I PUNTI PRIMA DEI NOMI: Significano "cerca in questa cartella"
+from . import utils
+from . import scraper
 
 TOKEN = os.getenv("TOKEN_BOT")
 ADMIN_ID = os.getenv("ADMIN_ID") 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-# --- 🎨 SEZIONE ESTETICA (MODIFICA QUI) 🎨 ---
-
-# Linea che divide le fasce orarie (copia-incolla caratteri speciali se vuoi)
+# --- 🎨 SEZIONE ESTETICA 🎨 ---
 SEPARATORE = "───────────────"
+HEADER_AULE_ALL = "🎓 **TUTTE LE AULE LIBERE** 🎓\n"
+HEADER_PRESE    = "🔌 **SOLO CON PRESE** 🔌\n"
+HEADER_MARATONA = "🏆 **MARATONA STUDIO** 🏆\n" # Nota: Smart Header gestirà le righe sotto
+DISCLAIMER = "\n⚠️ <i>La posizione sulla mappa indica l'ingresso del padiglione.\nPer l'ubicazione esatta, controlla i cartelli o l'app ufficiale PoliTO.</i>"
 
-# Print avvio per Render
-AVVIO = "🤖 Bot Avviato!"
-
-# Intestazioni dei messaggi
-#ATTENZIONE GLI HEADER SONO STUDIATI PER ESSERE SOLO DI UNA SOLA RIGA. QUINDI SE SI VUOLE AGGIUNGERE TESTO VA MODIFICATA AD ESEMPIO invia_lungo
-HEADER_AULE_ALL = "🎓  **TUTTE LE AULE LIBERE**  🎓\n"
-HEADER_PRESE    = "🔌  **SOLO CON PRESE**  🔌\n"
-HEADER_MARATONA = "🏆  **MARATONA STUDIO**  🏆\n"
-
-# Disclaimer finale
-DISCLAIMER = "\n⚠️ <i>La posizione sulla mappa indica l'ingresso del padiglione dell'aula o la zona di riferimento più vicina alla sua effettiva posizione.\nPer l'ubicazione esatta, controlla i cartelli o l'app ufficiale PoliTO.</i>"
-
-# Icone varie
 ICON_OROLOGIO = "🕒"
-ICON_SCUOLA   = "🏫📍(Clicca sull'aula per ottenere la posizione)"
-ICON_FUOCO    = "🔥 "
-ICON_PIN      = "" #NON RIMUOVERE, manderebbe in tilt il messaggio
-
-# ---------------------------------------------
+ICON_SCUOLA   = "🏫"
+ICON_FUOCO    = "🔥"
+ICON_PIN      = "📍"
+# -----------------------------
 
 # --- COMANDI ---
 
 async def aule_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🔎 Scarico tutte le aule...")
-    dati = scraper.scarica_dati_swas()
+    dati = scraper.scarica_dati_swas() # Scraper è importato dalla stessa cartella ora
     
     if not dati:
         await update.message.reply_text("❌ Errore sito Polito.")
@@ -55,8 +40,6 @@ async def aule_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for orario, lista_aule in dati.items():
         nomi_belli = [utils.formatta_nome(a) for a in lista_aule]
         testo = ", ".join(nomi_belli)
-        
-        # Costruzione blocco usando le variabili estetiche
         blocco = f"{ICON_OROLOGIO} {orario}\n{ICON_SCUOLA} {testo}\n{SEPARATORE}"
         messaggio.append(blocco)
     
@@ -71,9 +54,7 @@ async def prese(update: Update, context: ContextTypes.DEFAULT_TYPE):
     messaggio = [HEADER_PRESE]
     
     for orario, lista_aule in dati.items():
-        # mostra_icona=False perché siamo già nel menu prese
         lista_prese = [utils.formatta_nome(a, mostra_icona=False) for a in lista_aule if utils.controlla_presa(a)]
-        
         if lista_prese:
             blocco = f"{ICON_OROLOGIO} {orario}\n{ICON_SCUOLA} {', '.join(lista_prese)}\n{SEPARATORE}"
             messaggio.append(blocco)
@@ -90,7 +71,7 @@ async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     orari = list(dati.keys())
-    messaggio = [HEADER_MARATONA]
+    messaggio = [HEADER_MARATONA + "(Aule libere per più turni consecutivi)\n"] # Aggiungo qui il sottotitolo
     trovato = False
 
     for i in range(len(orari) - 1):
@@ -105,7 +86,7 @@ async def maratona(update: Update, context: ContextTypes.DEFAULT_TYPE):
             start = ora_curr.split('-')[0]
             end = ora_next.split('-')[1]
             
-            blocco = f"{ICON_FUOCO} **{start} -> {end}** \n{ICON_PIN} {', '.join(nomi)}\n{SEPARATORE}"
+            blocco = f"{ICON_FUOCO} **{start} -> {end}**\n{ICON_PIN} {', '.join(nomi)}\n{SEPARATORE}"
             messaggio.append(blocco)
     
     if not trovato: 
@@ -135,7 +116,6 @@ async def suggest(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❌ Errore invio.")
 
 async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Puoi personalizzare anche questo testo qui
     testo = (
         "🤖 <b>GUIDA AI COMANDI</b> 🤖\n\n"
         "🔹 <b>/start</b>\n"
@@ -158,53 +138,44 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     bot_user = await context.bot.get_me()
-    bot_name = bot_user.first_name if bot_user.first_name else "N/A"
-    bot_username = bot_user.username if bot_user.username else "N/A"
+    bot_name = bot_user.first_name if bot_user.first_name else "Bot"
     user_name = update.effective_user.first_name
-    await update.message.reply_text(f"Ciao {user_name}! Mi presento sono {bot_name}!\n@{bot_username} il bot che ti dice quali aule sono libere nelle Sede Centrale del PoliTo\nEcco tutti i comandi disponibili ⬇️\n")
     
+    await update.message.reply_text(f"Ciao {user_name}! Sono {bot_name}!\nTi dico quali aule sono libere al PoliTo.\n")
     await help_cmd(update, context)
 
-# --- GESTIONE MESSAGGI LUNGHI (SMART HEADER) ---
+# --- GESTIONE MESSAGGI LUNGHI (SMART HEADER INTEGRATA) ---
 async def invia_lungo(update, testo):
-    # Usa le variabili globali definite in cima al file (SEPARATORE, ecc.)
     blocchi = testo.split(SEPARATORE)
     chunk = ""
     
     for blocco in blocchi:
         if not blocco.strip(): continue
-        
         pezzo_completo = blocco.strip() + "\n" + SEPARATORE + "\n"
         
-        # CASO MOSTRUOSO (Blocco troppo grande da solo)
         if len(pezzo_completo) > 4000:
             if chunk:
                 await update.message.reply_text(chunk, parse_mode='HTML', disable_web_page_preview=True)
                 chunk = ""
             
             righe = pezzo_completo.split('\n')
-            
-            # LOGICA SMART: Cerca l'icona per identificare la fine dell'intestazione
             idx_aule = -1
             icona_usata = ""
             
             for i, riga in enumerate(righe):
-                # Cerchiamo le icone che usi nelle intestazioni
                 if ICON_SCUOLA in riga: 
                     idx_aule = i
                     icona_usata = ICON_SCUOLA + " "
                     break
-                elif ICON_PIN in riga:
+                elif ICON_PIN in riga and ICON_PIN != "": # Controllo che PIN non sia vuoto
                     idx_aule = i
                     icona_usata = ICON_PIN + " "
                     break
             
             if idx_aule != -1:
-                # L'intestazione è tutto ciò che c'è PRIMA dell'icona
                 intestazione = "\n".join(righe[:idx_aule]) + "\n" + icona_usata
                 corpo_aule = righe[idx_aule].replace(icona_usata, "", 1)
             else:
-                # Fallback se non trova icone
                 intestazione = righe[0] + "\n"
                 corpo_aule = "\n".join(righe[1:-2])
 
@@ -225,7 +196,6 @@ async def invia_lungo(update, testo):
                 await update.message.reply_text(messaggio_parziale + "\n" + SEPARATORE, parse_mode='HTML', disable_web_page_preview=True)
             continue 
 
-        # CASO NORMALE
         if len(chunk) + len(pezzo_completo) > 4000:
             await update.message.reply_text(chunk, parse_mode='HTML', disable_web_page_preview=True)
             chunk = ""
@@ -235,25 +205,25 @@ async def invia_lungo(update, testo):
     if chunk:
         await update.message.reply_text(chunk, parse_mode='HTML', disable_web_page_preview=True)
 
+# --- FUNZIONE DI SETUP (IMPORTANTE!) ---
+# Questa viene chiamata dal CAPO (main_hub.py)
+def setup_bot():
+    if not TOKEN:
+        print("⚠️ AuleBot: Token mancante!")
+        return None
 
-if __name__ == '__main__':
-    print("💤 Pausa avvio...")
-    time.sleep(5)
-    
-    if not TOKEN: exit()
-
+    # Carichiamo le prese qui
     utils.carica_prese()
-    utils.avvia_server_background()
 
-    app = ApplicationBuilder().token(TOKEN).build()
+    application = ApplicationBuilder().token(TOKEN).build()
     
-    app.add_handler(CommandHandler('start', start))
-    app.add_handler(CommandHandler('help', help_cmd))
-    app.add_handler(CommandHandler('auleAll', aule_all))
-    app.add_handler(CommandHandler('aule', aule_all))
-    app.add_handler(CommandHandler('prese', prese))
-    app.add_handler(CommandHandler('maratona', maratona))
-    app.add_handler(CommandHandler('suggest', suggest))
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('help', help_cmd))
+    application.add_handler(CommandHandler('auleAll', aule_all))
+    application.add_handler(CommandHandler('auleall', aule_all))
+    application.add_handler(CommandHandler('aule', aule_all))
+    application.add_handler(CommandHandler('prese', prese))
+    application.add_handler(CommandHandler('maratona', maratona))
+    application.add_handler(CommandHandler('suggest', suggest))
     
-    print(AVVIO)
-    app.run_polling()
+    return application
