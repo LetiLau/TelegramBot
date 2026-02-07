@@ -7,8 +7,8 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 from . import utils
 from . import scraper
 
-TOKEN = os.getenv("TOKEN_BOT")
-ADMIN_ID = os.getenv("ADMIN_ID") 
+TOKEN = os.getenv("ROOMS_BOT")
+ADMIN_ID = os.getenv("ADMIN_ID")
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
