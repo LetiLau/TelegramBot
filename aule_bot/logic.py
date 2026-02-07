@@ -225,6 +225,8 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🤖 <b>GUIDA AI COMANDI</b> 🤖\n\n"
         "🔹 <b>/start</b>\n"
         "Avvia il bot dall'inizio\n\n"
+        "🔹 <b>/info</b>\n"
+        "Mostra la descrizione iniziale di cosa fa il bot\n\n"
         "🔹 <b>/help</b>\n"
         "Mostra questo messaggio di aiuto🆘.\n\n"
         "🔹 <b>/suggest 'your message' </b>\n"
