@@ -6,7 +6,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 # Importiamo la logica del tuo bot dalla cartella
 from aule_bot import logic as aule_logic
 # Quando avrai il secondo bot, lo importerai così:
-# from appunti_bot import logic as appunti_logic
+from appunti_bot import logic as appunti_logic
 
 # --- SERVER FAKE PER RENDER (Uno solo per tutti!) ---
 class HealthCheckHandler(BaseHTTPRequestHandler):
@@ -36,19 +36,20 @@ async def main():
         print("❌ Impossibile avviare AuleBot (Token?)")
         return
 
-    # print("📚 Configuro AppuntiBot...")
-    # bot_appunti = appunti_logic.setup_bot()
+    print("📚 Configuro AppuntiBot...")
+    bot_appunti = appunti_logic.setup_bot()
     
     # 3. Avvia i bot in parallelo
     # Usiamo il Context Manager per gestire start/stop pulito
-    async with bot_aule: #, bot_appunti: <-- aggiungi qui il secondo bot
+    async with bot_aule, bot_appunti: #<-- aggiungi qui il secondo bot
         
         print("🚀 Avvio Polling AuleBot...")
+        
         await bot_aule.start()
         await bot_aule.updater.start_polling()
         
-        # await bot_appunti.start()
-        # await bot_appunti.updater.start_polling()
+        await bot_appunti.start()
+        await bot_appunti.updater.start_polling()
         
         print("✅ SISTEMA ONLINE! Premi Ctrl+C per fermare.")
         
