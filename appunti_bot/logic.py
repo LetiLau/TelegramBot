@@ -173,7 +173,7 @@ def setup_bot():
         print("⚠️ AppuntiBot: Token mancante!")
         return None
 
-    app = ApplicationBuilder().token(token).build()
+    app = ApplicationBuilder().token(TOKEN).build()
     
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(router)) # Unico handler che smista tutto
