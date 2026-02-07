@@ -15,13 +15,15 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 # --- 🎨 SEZIONE ESTETICA 🎨 ---
 SEPARATORE = "───────────────"
 
-# Qui mettiamo il testo descrittivo, così appare una volta sola in cima
-HEADER_AULE_ALL = "🎓 **TUTTE LE AULE LIBERE** 🎓\n(Clicca sul nome per la mappa)\n"
-HEADER_PRESE    = "🔌 **SOLO CON PRESE** 🔌\n(Clicca sul nome per la mappa)\n"
-HEADER_MARATONA = "🏆 **MARATONA STUDIO** 🏆\n(Aule libere per più turni consecutivi)\n"
-DISCLAIMER = "\n⚠️ <i>La posizione sulla mappa indica l'ingresso del padiglione.\nPer l'ubicazione esatta, controlla i cartelli o l'app ufficiale PoliTO.</i>"
+# Ho aggiunto qui il 📍 così appare nel titolo ed è bello da vedere
+HEADER_AULE_ALL = "🎓 **TUTTE LE AULE LIBERE** 🎓\n📍 (Clicca sul nome per la mappa)\n"
+HEADER_PRESE    = "🔌 **SOLO CON PRESE** 🔌\n📍 (Clicca sul nome per la mappa)\n"
 
-# LE ICONE DEVONO ESSERE SOLO EMOJI (per non rompere la logica di taglio)
+# Maratona ha già il suo stile specifico
+HEADER_MARATONA = "🏆 **MARATONA STUDIO** 🏆\n(Aule libere per più turni consecutivi)\n"
+DISCLAIMER = "\n⚠️ <i>La posizione sulla mappa indica l'ingresso del padiglione.</i>"
+
+# LE ICONE DEVONO RESTARE PULITE (Solo emoji, niente testo qui!)
 ICON_OROLOGIO = "🕒"
 ICON_SCUOLA   = "🏫" 
 ICON_FUOCO    = "🔥"
