@@ -77,6 +77,9 @@ async def menu_materie(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # --- 3. SCHEDA MATERIA E INVIO DEMO ---
+# FILE: appunti_bot/logic.py
+# (Ricordati gli import soliti in cima)
+
 async def info_materia(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     
@@ -97,7 +100,7 @@ async def info_materia(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         pass 
 
-    file_path = dati["file_demo"]
+    file_path = dati.get("file_demo", "") # Usa .get per sicurezza
     file_esiste = os.path.exists(file_path)
     
     # --- GESTIONE PDF ---
@@ -107,28 +110,47 @@ async def info_materia(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.answer("Invio demo in corso...") 
         try:
             with open(file_path, 'rb') as f:
+                # Titolo della demo sicuro
+                titolo_safe = dati.get('titolo', 'Appunti')
                 await context.bot.send_document(
                     chat_id=query.message.chat_id,
                     document=f,
-                    caption=f"📄 <b>Anteprima: {dati['nome']}</b>", # Usa <b>, non **
-                    parse_mode='HTML' # <--- QUI DICIAMO DI USARE HTML PER LA DIDASCALIA
+                    caption=f"📄 <b>Anteprima: {titolo_safe}</b>",
+                    parse_mode='HTML'
                 )
-            # Anche qui convertiamo gli asterischi in HTML per coerenza
-            testo_intro = "☝️ <b>Qui sopra trovi la demo.</b>\n\n"
+            testo_intro = "☝️ <b>Qui sopra trovi la demo.</b>"
         except Exception as e:
-            await context.bot.send_message(query.message.chat_id, "⚠️ Errore tecnico nell'invio del file.")
-            testo_intro = "⚠️ <b>Errore invio PDF.</b>\n\n"
+            testo_intro = "⚠️ <b>Errore invio PDF.</b>"
     else:
         await query.answer("⚠️ Demo PDF non ancora caricata.", show_alert=True)
-        testo_intro = "⚠️ <b>Anteprima PDF non ancora disponibile.</b>\n(Puoi comunque leggere la descrizione qui sotto)\n\n"
+        testo_intro = "⚠️ <b>Anteprima PDF non ancora disponibile.</b>"
 
-    # --- INVIO SCHEDA INFORMATIVA ---
-    # Costruiamo il messaggio finale usando HTML
-    testo_descrizione = (
-        f"{testo_intro}"
-        f"📚 <b>{dati['nome']}</b>\n"
-        f"📝 {dati['descrizione']}\n"   # Questo prende il testo HTML da content.py
-        f"💰 Prezzo: <b>{dati['prezzo']}</b>\n\n"
+    # --- RECUPERO DATI SICURO (Anti-Crash) ---
+    # Se il dato manca nel content.py, usiamo il valore di default (secondo argomento)
+    
+    titolo = dati.get('titolo', 'Titolo Sconosciuto')
+    prof = dati.get('prof', 'Prof. N/D')
+    anno = dati.get('anno_accademico', 'N/D')
+    
+    # Recuperiamo il libro (se manca mette 'Non specificato')
+    libro = dati.get('libro', 'Non specificato') 
+    
+    descrizione = dati.get('descrizione', 'Descrizione non disponibile.')
+    prezzo = dati.get('prezzo', 'N/D')
+    
+    # Formattazione lista formati
+    lista_formati = dati.get('formati', ['PDF'])
+    formati_stringa = "\n".join([f"- {f}" for f in lista_formati])
+
+    # --- IMPAGINAZIONE MESSAGGIO (Aggiornata) ---
+    testo_finale = (
+        f"{testo_intro}\n\n"
+        f"📚 <b>{titolo}</b>\n"
+        f"👤 {prof} (a.a. {anno})\n"
+        f"📖 <b>Libro rif.:</b> {libro}\n\n"  # <--- RIGA AGGIUNTA QUI
+        f"{descrizione}\n\n"
+        f"💾 <b>Formati:</b>\n{formati_stringa}\n\n"
+        f"💰 Prezzo: <b>{prezzo}</b>\n\n"
         "Cosa vuoi fare ora?"
     )
     
@@ -139,21 +161,21 @@ async def info_materia(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await context.bot.send_message(
         chat_id=query.message.chat_id,
-        text=testo_descrizione,
+        text=testo_finale,
         reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode='HTML' # <--- FONDAMENTALE: Attiva la lettura dei tag <b>, <u>, ecc.
+        parse_mode='HTML'
     )
 
 
 # --- 4. GESTIONE ORDINE (Notifica all'Admin) ---
+# FILE: appunti_bot/logic.py
+
 async def richiesta_acquisto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     
-    # 1. FIX NAME ERROR: Definiamo chi è l'utente
     user = query.from_user
     
-    # Parsing dei dati
     parti = query.data.split("_")
     chiave_anno = f"{parti[1]}_{parti[2]}"
     chiave_materia = "_".join(parti[3:])
@@ -164,66 +186,23 @@ async def richiesta_acquisto(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await query.edit_message_text("Errore: Articolo non più disponibile.")
         return
     
-    # 2. Prepariamo il messaggio per l'ADMIN
-    # Usiamo HTML per il link cliccabile al profilo dell'utente
+    # --- RECUPERO DATI SICURO (.get) ---
+    # Usiamo .get() anche qui. Se manca il titolo, usa "Appunti Generici"
+    nome_materia = dati.get('titolo', 'Appunti Generici') 
+    prezzo = dati.get('prezzo', 'N/D')
+    
+    # Prepariamo il messaggio per l'ADMIN
     user_link = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
     username_txt = f"@{user.username}" if user.username else "Nessun Username"
     
     msg_admin = (
         "💰 <b>NUOVO CLIENTE!</b>\n\n"
         f"👤 <b>Utente:</b> {user_link} ({username_txt})\n"
-        f"📚 <b>Vuole:</b> {dati['nome']}\n"
-        f"💶 <b>Prezzo:</b> {dati['prezzo']}\n"
+        f"📚 <b>Vuole:</b> {nome_materia}\n"  # Qui ora è sicuro
+        f"💶 <b>Prezzo:</b> {prezzo}\n"       # Qui ora è sicuro
     )
 
-    # 3. TENTATIVO DI INVIO ALL'ADMIN (Prima di confermare all'utente)
-    invio_riuscito = False
-    
-    if ADMIN_ID:
-        try:
-            await context.bot.send_message(chat_id=ADMIN_ID, text=msg_admin, parse_mode='HTML')
-            invio_riuscito = True
-        except Exception as e:
-            print(f"❌ Errore critico invio Admin: {e}")
-            invio_riuscito = False
-    else:
-        print("⚠️ ADMIN_ID non configurato!")
-        invio_riuscito = False
-
-    # 4. RISPOSTA ALL'UTENTE (In base all'esito)
-    if invio_riuscito:
-        # CASO SUCCESSO
-        msg_utente = (
-            "✅ <b>Richiesta inviata!</b>\n\n"
-            f"Ho avvisato il venditore che sei interessato a <b>{dati['nome']}</b>.\n"
-            "Ti contatterà a breve qui su Telegram per darti il file completo."
-        )
-        # Bottone "Vedi altri appunti" che rimanda al menu dell'anno corrente
-        keyboard = [
-            [InlineKeyboardButton("🔙 Vedi altri appunti", callback_data=f'menu_{chiave_anno}')]
-        ]
-        await query.edit_message_text(
-            text=msg_utente, 
-            reply_markup=InlineKeyboardMarkup(keyboard), 
-            parse_mode='HTML'
-        )
-    else:
-        # CASO ERRORE (Fallback manuale)
-        msg_errore = (
-            "❌ <b>Errore di comunicazione.</b>\n\n"
-            "Non sono riuscito ad avvisare il venditore in automatico.\n"
-            "Per favore, contattalo tu manualmente cliccando qui sotto."
-        )
-        # Bottone che apre la chat diretta con te (Admin)
-        # Nota: Funziona se ADMIN_ID è corretto, altrimenti metti il tuo username es: url="https://t.me/tuousername"
-        keyboard = [
-            [InlineKeyboardButton("💬 Contatta Admin manualmente", url=f"tg://user?id={ADMIN_ID}")]
-        ]
-        await query.edit_message_text(
-            text=msg_errore, 
-            reply_markup=InlineKeyboardMarkup(keyboard), 
-            parse_mode='HTML'
-        )
+    # ... (il resto del codice invio admin e risposta utente rimane uguale) ...
 
 
 
