@@ -16,13 +16,13 @@ CATALOGO = {
             "nome": "⚛️ Fisica 1",
             "descrizione": "Teoria completa + Esercizi svolti. Ottimo per lo scritto.",
             "prezzo": "12,00€",
-            "file_demo": "appunti_bot/files/demo_fisica1.pdf" 
+            "file_demo": "appunti_bot/files/demo-fisica1.pdf"
         },
         "chimica": {
             "nome": "🧪 Chimica",
             "descrizione": "Limiti, derivate, integrali e serie.",
             "prezzo": "10,00€",
-            "file_demo": "appunti_bot/files/demo_analisi1.pdf" # Esempio futuro
+            "file_demo": "appunti_bot/files/demo-chimica.pdf" # Esempio futuro
         }
     },
     "anno_2": {
@@ -37,17 +37,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("1️⃣ Primo Anno", callback_data='menu_anno_1')],
         [InlineKeyboardButton("2️⃣ Secondo Anno (Presto...)", callback_data='menu_anno_2')],
     ]
+
+    user_name=update.effective_user.first_name
     
     testo = (
-        "👋 **Ciao! Sono il Bot degli Appunti.**\n\n"
-        "Seleziona il tuo anno per vedere le materie disponibili:"
+        f"👋 Ciao {user_name}! Benvennuto nel <b>Bot degli Appunti<b>.\n\n"
+        "Seleziona il tuo anno per vedere le materie disponibili⬇️:"
     )
     
     # Se è un nuovo messaggio o una modifica di uno esistente
     if update.message:
-        await update.message.reply_text(testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
+        await update.message.reply_text(testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='HTML')
     else:
-        await update.callback_query.edit_message_text(testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
+        await update.callback_query.edit_message_text(testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='HTML')
 
 # --- 2. MENU MATERIE (Dopo aver scelto l'anno) ---
 async def menu_materie(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -74,54 +76,82 @@ async def menu_materie(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # --- 3. SCHEDA MATERIA E INVIO DEMO ---
+# --- 3. SCHEDA MATERIA E INVIO DEMO (CORRETTA) ---
 async def info_materia(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    await query.answer("Invio demo in corso...") # Feedback immediato
     
-    # Parsing dei dati: info_anno_1_fisica_1
-    _, anno, materia = query.data.split("_", 2)
-    dati = CATALOGO[anno][materia]
+    # Parsing robusto della stringa: info_anno_1_fisica_1
+    # Dividiamo tutto per "_"
+    parti = query.data.split("_") 
+    # parti sarà: ['info', 'anno', '1', 'fisica', '1']
     
-    # Testo della scheda
+    # Ricostruiamo le chiavi per il dizionario
+    chiave_anno = f"{parti[1]}_{parti[2]}"  # diventa "anno_1"
+    
+    # Per la materia, uniamo tutto ciò che c'è dopo l'anno
+    # (così se un domani hai "fisica_tecnica" funziona lo stesso)
+    chiave_materia = "_".join(parti[3:])    # diventa "fisica_1"
+    
+    # Debug (opzionale, se vuoi vedere cosa succede nei log)
+    print(f"Certo anno: {chiave_anno}, materia: {chiave_materia}")
+
+    try:
+        dati = CATALOGO[chiave_anno][chiave_materia]
+    except KeyError:
+        await query.answer("Errore: Materia non trovata nel catalogo!", show_alert=True)
+        return
+
+    await query.answer("Carico le info...")
+
+    # 1. Testo della scheda (Descrizione + Prezzo)
     testo = (
         f"📚 **{dati['nome']}**\n\n"
-        f"📝 {dati['descrizione']}\n"
-        f"💰 Prezzo: **{dati['prezzo']}**\n\n"
-        "👇 *Qui sotto trovi l'anteprima PDF gratuita.*"
+        f"📝 {dati['descrizione']}\n\n"
+        f"💰 Prezzo: **{dati['prezzo']}**\n"
+        "👇 *Sto inviando il PDF Anteprima qui sotto...*"
     )
     
     # Pulsante per ORDINARE
     keyboard = [
-        [InlineKeyboardButton("✅ LO VOGLIO COMPRARE", callback_data=f'buy_{anno}_{materia}')],
-        [InlineKeyboardButton("🔙 Torna alle materie", callback_data=f'menu_{anno}')]
+        # Passiamo gli stessi dati al bottone compra
+        [InlineKeyboardButton("✅ LO VOGLIO COMPRARE", callback_data=f'buy_{chiave_anno}_{chiave_materia}')],
+        [InlineKeyboardButton("🔙 Torna alle materie", callback_data=f'menu_{chiave_anno}')]
     ]
 
-    # 1. Modifica il messaggio testo con le info e i bottoni
+    # Invia PRIMA il messaggio di testo (modificando quello precedente)
     await query.edit_message_text(testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
     
-    # 2. Invia il file PDF Demo (se esiste)
+    # 2. Invia DOPO il file PDF Demo
     file_path = dati["file_demo"]
     chat_id = query.message.chat_id
     
     if os.path.exists(file_path):
-        with open(file_path, 'rb') as f:
-            await context.bot.send_document(
-                chat_id=chat_id,
-                document=f,
-                caption=f"Anteprima di {dati['nome']} 📄"
-            )
+        try:
+            with open(file_path, 'rb') as f:
+                await context.bot.send_document(
+                    chat_id=chat_id,
+                    document=f,
+                    caption=f"📄 Anteprima gratuita: {dati['nome']}"
+                )
+        except Exception as e:
+            # Se c'è un errore nell'invio del file (es. file troppo grande o corrotto)
+            print(f"Errore invio file: {e}")
+            await context.bot.send_message(chat_id, "⚠️ Errore nell'invio del PDF demo.")
     else:
-        # Se ti sei dimenticato di caricare il file su GitHub/Render
-        await context.bot.send_message(chat_id, "⚠️ Demo non trovata (l'admin la sta caricando!).")
+        # Se il file non esiste sul server
+        await context.bot.send_message(chat_id, "⚠️ Demo PDF non ancora caricata (contatta l'admin).")
 
 # --- 4. GESTIONE ORDINE (Notifica all'Admin) ---
 async def richiesta_acquisto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     
-    user = query.from_user
-    _, anno, materia = query.data.split("_", 2)
-    dati = CATALOGO[anno][materia]
+    # Parsing robusto (stesso metodo di prima)
+    parti = query.data.split("_")
+    chiave_anno = f"{parti[1]}_{parti[2]}"  # "anno_1"
+    chiave_materia = "_".join(parti[3:])    # "fisica_1"
+    
+    dati = CATALOGO[chiave_anno][chiave_materia]
     
     # 1. Risposta all'utente (COMPRATORE)
     msg_utente = (
