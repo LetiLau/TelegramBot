@@ -11,33 +11,36 @@ CATALOGO = {
     "anno_1": {
         "fisica_1": {
             # --- DATI OBBLIGATORI ---
-            "titolo": "Fisica 1",
+            "titolo": "⚛️Fisica 1",
             "prezzo": "12,00€",
             "file_demo": "appunti_bot/files/demo_fisica1.pdf",
             
             # --- NUOVI CAMPI ---
             "prof": "Prof. Stefania Bufalino",
             "anno_accademico": "2024/2025",
-            "libro": "Mazzoldi, Nigro, Voci - Elementi di Fisica",
+            "libro": "Mazzoldi, Nigro, Voci - Elementi di Fisica (meccanica e termodinamica)",
             
             # Elenco dei formati (puoi metterne quanti vuoi)
             "formati": [
-                "PDF (Indice Cliccabile)",
-                "Buono per stampa A4"
+                "PDF (Indice Cliccabile), colori/bianco e nero",
+                "notewise (versione app gratuita Android/IOS), modificabile"
             ],
 
             # Descrizione lunga (HTML)
             "descrizione": """
-<b>Appunti completi di teoria ed esercizi.</b>
-Ho seguito il corso prendendo appunti su tablet, rielaborando poi a casa con il libro di testo.
+Appunti completi di formule, teoria, dimostrazioni e note teoriche per i quiz, completamente sostitutivi alle <b>lezioni di teoria</b>.
+Basati sulle slide della professoressa e sul libro di riferimento.
+Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare la comprensione delle note relative agli argomenti/formule, compresi di disegni e immagini.
+<b>102 pagine</b>
 
 📌 <b>Argomenti principali:</b>
-• Cinematica del punto e <u>moti relativi</u>.
-• Dinamica e forze apparenti.
-• Sistemi di punti e Corpo Rigido.
-• Termodinamica (fino al 2° principio).
+• Cinematica e dinamica del punto
+• Moti relativi
+• Sistemi di punti, corpo rigido, urti
+• Termodinamica.
+• Fluidodinamica
+• Gravitazione
 
-<i>Ottimi per preparare lo scritto.</i>
 """
         },
         
