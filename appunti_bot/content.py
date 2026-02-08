@@ -10,42 +10,45 @@
 CATALOGO = {
     "anno_1": {
         "fisica_1": {
-            "nome": "⚛️ Fisica 1",
+            # --- DATI OBBLIGATORI ---
+            "titolo": "Fisica 1",
             "prezzo": "12,00€",
-            "file_demo": "appunti_bot/files/demo-fisica1.pdf",
+            "file_demo": "appunti_bot/files/demo_fisica1.pdf",
             
+            # --- NUOVI CAMPI ---
+            "prof": "Prof. Stefania Bufalino",
+            "anno_accademico": "2024/2025",
+            "libro": "Mazzoldi, Nigro, Voci - Elementi di Fisica",
+            
+            # Elenco dei formati (puoi metterne quanti vuoi)
+            "formati": [
+                "PDF (Indice Cliccabile)",
+                "Buono per stampa A4"
+            ],
+
+            # Descrizione lunga (HTML)
             "descrizione": """
-<b>Appunti completi di Fisica 1</b>
-<u>Ideali per Ingegneria Informatica e Meccanica.</u>
+<b>Appunti completi di teoria ed esercizi.</b>
+Ho seguito il corso prendendo appunti su tablet, rielaborando poi a casa con il libro di testo.
 
-📌 <b>Cosa contiene il PDF:</b>
-• <b>Cinematica:</b> Moto rettilineo, circolare e proiettile.
-• <b>Dinamica:</b> I 3 principi, attrito e <u>forze apparenti</u>.
-• <b>Termodinamica:</b> Cicli, entropia e 2° principio.
+📌 <b>Argomenti principali:</b>
+• Cinematica del punto e <u>moti relativi</u>.
+• Dinamica e forze apparenti.
+• Sistemi di punti e Corpo Rigido.
+• Termodinamica (fino al 2° principio).
 
-💡 <i>Ho preso 30L studiando su questi appunti!</i>
+<i>Ottimi per preparare lo scritto.</i>
 """
         },
         
         "chimica": {
-            "nome": "🧪 Chimica Generale",
+            "titolo": "Chimica",
             "prezzo": "10,00€",
             "file_demo": "appunti_bot/files/demo_chimica.pdf",
-            
-            "descrizione": """
-<b>Appunti schematici di Chimica</b>
-<u>Tutto quello che serve per passare lo scritto.</u>
-
-📌 <b>Argomenti chiave:</b>
-• Struttura atomica e <u>Tavola Periodica</u>
-• Legami (Covalente, Ionico).
-• Stechiometria e Bilanciamento.
-
-<i>Scritti a mano con schemi a colori.</i>
-"""
-        }
-   },
-
+            # Se dimentichi prof o anno, il bot non crasherà!
+            "formati": ["PDF", "GoodNotes"],
+            "descrizione": "Appunti schematici su orbitali, legami e stechiometria."
+        },
   
   "anno_2": {
 
