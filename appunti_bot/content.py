@@ -44,7 +44,7 @@ CATALOGO = {
 <i>Scritti a mano con schemi a colori.</i>
 """
         }
-   }
+   },
 
   
   "anno_2": {
