@@ -168,41 +168,94 @@ async def info_materia(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # --- 4. GESTIONE ORDINE (Notifica all'Admin) ---
-# FILE: appunti_bot/logic.py
-
+# --- 4. GESTIONE ORDINE (Versione Robusta Anti-Crash) ---
 async def richiesta_acquisto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     
+    # 1. Definiamo subito l'utente per evitare errori
     user = query.from_user
     
+    # Parsing della callback data
     parti = query.data.split("_")
     chiave_anno = f"{parti[1]}_{parti[2]}"
     chiave_materia = "_".join(parti[3:])
     
+    # Recupero dati dal Catalogo
     try:
         dati = CATALOGO[chiave_anno][chiave_materia]
     except KeyError:
-        await query.edit_message_text("Errore: Articolo non più disponibile.")
+        await query.edit_message_text("❌ Errore: Articolo non più disponibile o rimosso.")
         return
     
-    # --- RECUPERO DATI SICURO (.get) ---
-    # Usiamo .get() anche qui. Se manca il titolo, usa "Appunti Generici"
-    nome_materia = dati.get('titolo', 'Appunti Generici') 
-    prezzo = dati.get('prezzo', 'N/D')
+    # 2. RECUPERO DATI SICURO (.get)
+    # Se mancano nel catalogo, usa i valori di default ("Appunti", "N/D")
+    titolo_safe = dati.get('titolo', 'Appunti Generici')
+    prezzo_safe = dati.get('prezzo', 'Prezzo N/D')
     
-    # Prepariamo il messaggio per l'ADMIN
+    # 3. Prepariamo il messaggio per l'ADMIN (TE)
+    # Creiamo un link cliccabile al profilo dell'utente
     user_link = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
     username_txt = f"@{user.username}" if user.username else "Nessun Username"
     
     msg_admin = (
         "💰 <b>NUOVO CLIENTE!</b>\n\n"
         f"👤 <b>Utente:</b> {user_link} ({username_txt})\n"
-        f"📚 <b>Vuole:</b> {nome_materia}\n"  # Qui ora è sicuro
-        f"💶 <b>Prezzo:</b> {prezzo}\n"       # Qui ora è sicuro
+        f"📚 <b>Vuole:</b> {titolo_safe}\n"
+        f"💶 <b>Prezzo:</b> {prezzo_safe}\n"
     )
 
-    # ... (il resto del codice invio admin e risposta utente rimane uguale) ...
+    # 4. TENTATIVO DI INVIO ALL'ADMIN
+    invio_riuscito = False
+    
+    if ADMIN_ID:
+        try:
+            await context.bot.send_message(chat_id=ADMIN_ID, text=msg_admin, parse_mode='HTML')
+            invio_riuscito = True
+        except Exception as e:
+            print(f"❌ Errore critico invio Admin: {e}")
+            invio_riuscito = False
+    else:
+        print("⚠️ ADMIN_ID non configurato nelle variabili d'ambiente!")
+        invio_riuscito = False
+
+    # 5. RISPOSTA ALL'UTENTE (In base all'esito)
+    if invio_riuscito:
+        # CASO SUCCESSO: Admin avvisato
+        msg_utente = (
+            "✅ <b>Richiesta inviata!</b>\n\n"
+            f"Ho avvisato il venditore che sei interessato a <b>{titolo_safe}</b>.\n"
+            "Ti contatterà a breve qui su Telegram per darti il file completo."
+        )
+        # Bottone per tornare indietro
+        keyboard = [
+            [InlineKeyboardButton("🔙 Vedi altri appunti", callback_data=f'menu_{chiave_anno}')]
+        ]
+        await query.edit_message_text(
+            text=msg_utente, 
+            reply_markup=InlineKeyboardMarkup(keyboard), 
+            parse_mode='HTML'
+        )
+    else:
+        # CASO ERRORE: Fallback manuale
+        msg_errore = (
+            "❌ <b>Errore di comunicazione.</b>\n\n"
+            "Non sono riuscito ad avvisare il venditore in automatico.\n"
+            "Per favore, contattalo tu manualmente cliccando qui sotto."
+        )
+        
+        # Generiamo il link diretto alla tua chat
+        # Se ADMIN_ID c'è usa tg://user, altrimenti serve il tuo username
+        url_contatto = f"tg://user?id={ADMIN_ID}" if ADMIN_ID else "https://t.me/TUO_USERNAME"
+        
+        keyboard = [
+            [InlineKeyboardButton("💬 Contatta Admin manualmente", url=url_contatto)]
+        ]
+        await query.edit_message_text(
+            text=msg_errore, 
+            reply_markup=InlineKeyboardMarkup(keyboard), 
+            parse_mode='HTML'
+        )
 
 
 
