@@ -150,41 +150,82 @@ async def richiesta_acquisto(update: Update, context: ContextTypes.DEFAULT_TYPE)
     query = update.callback_query
     await query.answer()
     
-    # Parsing robusto (stesso metodo di prima)
+    # 1. FIX NAME ERROR: Definiamo chi è l'utente
+    user = query.from_user
+    
+    # Parsing dei dati
     parti = query.data.split("_")
-    chiave_anno = f"{parti[1]}_{parti[2]}"  # "anno_1"
-    chiave_materia = "_".join(parti[3:])    # "fisica_1"
+    chiave_anno = f"{parti[1]}_{parti[2]}"
+    chiave_materia = "_".join(parti[3:])
     
-    dati = CATALOGO[chiave_anno][chiave_materia]
+    try:
+        dati = CATALOGO[chiave_anno][chiave_materia]
+    except KeyError:
+        await query.edit_message_text("Errore: Articolo non più disponibile.")
+        return
     
-    # 1. Risposta all'utente (COMPRATORE)
-    msg_utente = (
-        "✅ **Richiesta inviata!**\n\n"
-        f"Ho avvisato il venditore che sei interessato a **{dati['nome']}**.\n"
-        "Ti contatterà a breve qui su Telegram per darti il file completo."
+    # 2. Prepariamo il messaggio per l'ADMIN
+    # Usiamo HTML per il link cliccabile al profilo dell'utente
+    user_link = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
+    username_txt = f"@{user.username}" if user.username else "Nessun Username"
+    
+    msg_admin = (
+        "💰 <b>NUOVO CLIENTE!</b>\n\n"
+        f"👤 <b>Utente:</b> {user_link} ({username_txt})\n"
+        f"📚 <b>Vuole:</b> {dati['nome']}\n"
+        f"💶 <b>Prezzo:</b> {dati['prezzo']}\n"
     )
-    # Rimuoviamo il bottone "Lo voglio" per evitare doppi click
-    await query.edit_message_text(msg_utente, parse_mode='Markdown')
+
+    # 3. TENTATIVO DI INVIO ALL'ADMIN (Prima di confermare all'utente)
+    invio_riuscito = False
     
-    # 2. Notifica all'Admin (VENDITORE - TU)
     if ADMIN_ID:
-        # Creiamo un link per chattare subito con l'utente
-        user_link = f"tg://user?id={user.id}"
-        username_txt = f"@{user.username}" if user.username else "Nessun Username"
-        
-        msg_admin = (
-            "💰 **NUOVO CLIENTE!**\n\n"
-            f"👤 **Utente:** {user.first_name} ({username_txt})\n"
-            f"📚 **Vuole:** {dati['nome']}\n"
-            f"💶 **Prezzo:** {dati['prezzo']}\n\n"
-            f"👉 [CLICCA QUI PER CONTATTARLO]({user_link})"
-        )
         try:
-            await context.bot.send_message(chat_id=ADMIN_ID, text=msg_admin, parse_mode='Markdown')
+            await context.bot.send_message(chat_id=ADMIN_ID, text=msg_admin, parse_mode='HTML')
+            invio_riuscito = True
         except Exception as e:
-            print(f"Errore invio notifica admin: {e}")
+            print(f"❌ Errore critico invio Admin: {e}")
+            invio_riuscito = False
     else:
-        print("⚠️ ADMIN_ID non configurato nelle variabili d'ambiente!")
+        print("⚠️ ADMIN_ID non configurato!")
+        invio_riuscito = False
+
+    # 4. RISPOSTA ALL'UTENTE (In base all'esito)
+    if invio_riuscito:
+        # CASO SUCCESSO
+        msg_utente = (
+            "✅ <b>Richiesta inviata!</b>\n\n"
+            f"Ho avvisato il venditore che sei interessato a <b>{dati['nome']}</b>.\n"
+            "Ti contatterà a breve qui su Telegram per darti il file completo."
+        )
+        # Bottone "Vedi altri appunti" che rimanda al menu dell'anno corrente
+        keyboard = [
+            [InlineKeyboardButton("🔙 Vedi altri appunti", callback_data=f'menu_{chiave_anno}')]
+        ]
+        await query.edit_message_text(
+            text=msg_utente, 
+            reply_markup=InlineKeyboardMarkup(keyboard), 
+            parse_mode='HTML'
+        )
+    else:
+        # CASO ERRORE (Fallback manuale)
+        msg_errore = (
+            "❌ <b>Errore di comunicazione.</b>\n\n"
+            "Non sono riuscito ad avvisare il venditore in automatico.\n"
+            "Per favore, contattalo tu manualmente cliccando qui sotto."
+        )
+        # Bottone che apre la chat diretta con te (Admin)
+        # Nota: Funziona se ADMIN_ID è corretto, altrimenti metti il tuo username es: url="https://t.me/tuousername"
+        keyboard = [
+            [InlineKeyboardButton("💬 Contatta Admin manualmente", url=f"tg://user?id={ADMIN_ID}")]
+        ]
+        await query.edit_message_text(
+            text=msg_errore, 
+            reply_markup=InlineKeyboardMarkup(keyboard), 
+            parse_mode='HTML'
+        )
+
+
 
 # --- ROUTER CENTRALE ---
 async def router(update: Update, context: ContextTypes.DEFAULT_TYPE):
