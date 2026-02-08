@@ -12,7 +12,7 @@ CATALOGO = {
         "fisica_1": {
             "nome": "⚛️ Fisica 1",
             "prezzo": "12,00€",
-            "file_demo": "appunti_bot/files/demo_fisica1.pdf",
+            "file_demo": "appunti_bot/files/demo-fisica1.pdf",
             
             "descrizione": """
 <b>Appunti completi di Fisica 1</b>
