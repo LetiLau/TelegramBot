@@ -1,6 +1,7 @@
 import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
+from .content import CATALOGO
 
 # --- CONFIGURAZIONE ---
 # ID del venditore (TU) per ricevere le notifiche
@@ -10,25 +11,25 @@ TOKEN = os.getenv("APPUNTI_BOT")
 
 # DATABASE DEI CORSI (Facile da espandere)
 # Struttura: Anno -> Codice_Materia -> Dettagli
-CATALOGO = {
-    "anno_1": {
-        "fisica_1": {
-            "nome": "⚛️ Fisica 1",
-            "descrizione": "Teoria completa + Esercizi svolti. Ottimo per lo scritto.",
-            "prezzo": "12,00€",
-            "file_demo": "appunti_bot/files/demo-fisica1.pdf"
-        },
-        "chimica": {
-            "nome": "🧪 Chimica",
-            "descrizione": "Limiti, derivate, integrali e serie.",
-            "prezzo": "10,00€",
-            "file_demo": "appunti_bot/files/demo-chimica.pdf" # Esempio futuro
-        }
-    },
-    "anno_2": {
-        # Puoi aggiungere materie qui in futuro
-    }
-}
+# CATALOGO = {
+#     "anno_1": {
+#         "fisica_1": {
+#             "nome": "⚛️ Fisica 1",
+#             "descrizione": "Teoria completa + Esercizi svolti. Ottimo per lo scritto.",
+#             "prezzo": "12,00€",
+#             "file_demo": "appunti_bot/files/demo-fisica1.pdf"
+#         },
+#         "chimica": {
+#             "nome": "🧪 Chimica",
+#             "descrizione": "Limiti, derivate, integrali e serie.",
+#             "prezzo": "10,00€",
+#             "file_demo": "appunti_bot/files/demo-chimica.pdf" # Esempio futuro
+#         }
+#     },
+#     "anno_2": {
+#         # Puoi aggiungere materie qui in futuro
+#     }
+# }
 
 # --- 1. MENU PRINCIPALE (Scelta Anno) ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -76,7 +77,6 @@ async def menu_materie(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # --- 3. SCHEDA MATERIA E INVIO DEMO ---
-# --- 3. SCHEDA MATERIA E INVIO DEMO (UX MIGLIORATA) ---
 async def info_materia(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     
@@ -88,51 +88,47 @@ async def info_materia(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         dati = CATALOGO[chiave_anno][chiave_materia]
     except KeyError:
-        # USARE show_alert=True crea un POP-UP invece di un messaggio in chat
         await query.answer("Errore: Materia non trovata!", show_alert=True)
         return
 
-    file_path = dati["file_demo"]
-    
-    # --- CASO 1: IL FILE NON ESISTE (Es. Chimica) ---
-    if not os.path.exists(file_path):
-        # Invece di inviare un messaggio che sporca la chat, facciamo un POP-UP
-        await query.answer(
-            "⚠️ Demo PDF non ancora caricata.\nContatta l'admin se ti serve urgente!", 
-            show_alert=True
-        )
-        # Non facciamo altro: il menu rimane lì dov'è, perfetto.
-        return
-
-    # --- CASO 2: IL FILE ESISTE (Es. Fisica) ---
-    await query.answer("Invio demo in corso...") # Piccola notifica temporanea in basso
-    
-    # a. Cancelliamo il vecchio menu per non avere doppioni sopra il PDF
+    # Cancelliamo il vecchio messaggio
     try:
         await query.message.delete()
     except:
-        pass # Se non riesce a cancellare (messaggio vecchio), pazienza
+        pass 
 
-    # b. Inviamo il PDF
-    try:
-        with open(file_path, 'rb') as f:
-            await context.bot.send_document(
-                chat_id=query.message.chat_id,
-                document=f,
-                caption=f"📄 **Anteprima: {dati['nome']}**",
-                parse_mode='Markdown'
-            )
-    except Exception as e:
-        await context.bot.send_message(query.message.chat_id, "⚠️ Errore invio file.")
-        return
+    file_path = dati["file_demo"]
+    file_esiste = os.path.exists(file_path)
+    
+    # --- GESTIONE PDF ---
+    testo_intro = ""
+    
+    if file_esiste:
+        await query.answer("Invio demo in corso...") 
+        try:
+            with open(file_path, 'rb') as f:
+                await context.bot.send_document(
+                    chat_id=query.message.chat_id,
+                    document=f,
+                    caption=f"📄 <b>Anteprima: {dati['nome']}</b>", # Usa <b>, non **
+                    parse_mode='HTML' # <--- QUI DICIAMO DI USARE HTML PER LA DIDASCALIA
+                )
+            # Anche qui convertiamo gli asterischi in HTML per coerenza
+            testo_intro = "☝️ <b>Qui sopra trovi la demo.</b>\n\n"
+        except Exception as e:
+            await context.bot.send_message(query.message.chat_id, "⚠️ Errore tecnico nell'invio del file.")
+            testo_intro = "⚠️ <b>Errore invio PDF.</b>\n\n"
+    else:
+        await query.answer("⚠️ Demo PDF non ancora caricata.", show_alert=True)
+        testo_intro = "⚠️ <b>Anteprima PDF non ancora disponibile.</b>\n(Puoi comunque leggere la descrizione qui sotto)\n\n"
 
-    # c. Inviamo un NUOVO MENU sotto il PDF
-    # Così i bottoni sono subito disponibili senza scorrere
+    # --- INVIO SCHEDA INFORMATIVA ---
+    # Costruiamo il messaggio finale usando HTML
     testo_descrizione = (
-        f"☝️ **Qui sopra trovi la demo.**\n\n"
-        f"📚 **{dati['nome']}**\n"
-        f"📝 {dati['descrizione']}\n"
-        f"💰 Prezzo: **{dati['prezzo']}**\n\n"
+        f"{testo_intro}"
+        f"📚 <b>{dati['nome']}</b>\n"
+        f"📝 {dati['descrizione']}\n"   # Questo prende il testo HTML da content.py
+        f"💰 Prezzo: <b>{dati['prezzo']}</b>\n\n"
         "Cosa vuoi fare ora?"
     )
     
@@ -145,7 +141,7 @@ async def info_materia(update: Update, context: ContextTypes.DEFAULT_TYPE):
         chat_id=query.message.chat_id,
         text=testo_descrizione,
         reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode='Markdown'
+        parse_mode='HTML' # <--- FONDAMENTALE: Attiva la lettura dei tag <b>, <u>, ecc.
     )
 
 
