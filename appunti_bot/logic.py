@@ -41,15 +41,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name=update.effective_user.first_name
     
     testo = (
-        f"👋 Ciao {user_name}! Benvennuto nel <b>Bot degli Appunti<b>.\n\n"
+        f"👋 Ciao {user_name}! Benvennuto nel **Bot degli Appunti**.\n\n"
         "Seleziona il tuo anno per vedere le materie disponibili⬇️:"
     )
     
     # Se è un nuovo messaggio o una modifica di uno esistente
     if update.message:
-        await update.message.reply_text(testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='HTML')
+        await update.message.reply_text(testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
     else:
-        await update.callback_query.edit_message_text(testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='HTML')
+        await update.callback_query.edit_message_text(testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
 
 # --- 2. MENU MATERIE (Dopo aver scelto l'anno) ---
 async def menu_materie(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -76,70 +76,78 @@ async def menu_materie(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # --- 3. SCHEDA MATERIA E INVIO DEMO ---
-# --- 3. SCHEDA MATERIA E INVIO DEMO (CORRETTA) ---
+# --- 3. SCHEDA MATERIA E INVIO DEMO (UX MIGLIORATA) ---
 async def info_materia(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     
-    # Parsing robusto della stringa: info_anno_1_fisica_1
-    # Dividiamo tutto per "_"
+    # 1. Parsing dati
     parti = query.data.split("_") 
-    # parti sarà: ['info', 'anno', '1', 'fisica', '1']
-    
-    # Ricostruiamo le chiavi per il dizionario
-    chiave_anno = f"{parti[1]}_{parti[2]}"  # diventa "anno_1"
-    
-    # Per la materia, uniamo tutto ciò che c'è dopo l'anno
-    # (così se un domani hai "fisica_tecnica" funziona lo stesso)
-    chiave_materia = "_".join(parti[3:])    # diventa "fisica_1"
-    
-    # Debug (opzionale, se vuoi vedere cosa succede nei log)
-    print(f"Certo anno: {chiave_anno}, materia: {chiave_materia}")
+    chiave_anno = f"{parti[1]}_{parti[2]}"
+    chiave_materia = "_".join(parti[3:])
 
     try:
         dati = CATALOGO[chiave_anno][chiave_materia]
     except KeyError:
-        await query.answer("Errore: Materia non trovata nel catalogo!", show_alert=True)
+        # USARE show_alert=True crea un POP-UP invece di un messaggio in chat
+        await query.answer("Errore: Materia non trovata!", show_alert=True)
         return
 
-    await query.answer("Carico le info...")
+    file_path = dati["file_demo"]
+    
+    # --- CASO 1: IL FILE NON ESISTE (Es. Chimica) ---
+    if not os.path.exists(file_path):
+        # Invece di inviare un messaggio che sporca la chat, facciamo un POP-UP
+        await query.answer(
+            "⚠️ Demo PDF non ancora caricata.\nContatta l'admin se ti serve urgente!", 
+            show_alert=True
+        )
+        # Non facciamo altro: il menu rimane lì dov'è, perfetto.
+        return
 
-    # 1. Testo della scheda (Descrizione + Prezzo)
-    testo = (
-        f"📚 **{dati['nome']}**\n\n"
-        f"📝 {dati['descrizione']}\n\n"
-        f"💰 Prezzo: **{dati['prezzo']}**\n"
-        "👇 *Sto inviando il PDF Anteprima qui sotto...*"
+    # --- CASO 2: IL FILE ESISTE (Es. Fisica) ---
+    await query.answer("Invio demo in corso...") # Piccola notifica temporanea in basso
+    
+    # a. Cancelliamo il vecchio menu per non avere doppioni sopra il PDF
+    try:
+        await query.message.delete()
+    except:
+        pass # Se non riesce a cancellare (messaggio vecchio), pazienza
+
+    # b. Inviamo il PDF
+    try:
+        with open(file_path, 'rb') as f:
+            await context.bot.send_document(
+                chat_id=query.message.chat_id,
+                document=f,
+                caption=f"📄 **Anteprima: {dati['nome']}**",
+                parse_mode='Markdown'
+            )
+    except Exception as e:
+        await context.bot.send_message(query.message.chat_id, "⚠️ Errore invio file.")
+        return
+
+    # c. Inviamo un NUOVO MENU sotto il PDF
+    # Così i bottoni sono subito disponibili senza scorrere
+    testo_descrizione = (
+        f"☝️ **Qui sopra trovi la demo.**\n\n"
+        f"📚 **{dati['nome']}**\n"
+        f"📝 {dati['descrizione']}\n"
+        f"💰 Prezzo: **{dati['prezzo']}**\n\n"
+        "Cosa vuoi fare ora?"
     )
     
-    # Pulsante per ORDINARE
     keyboard = [
-        # Passiamo gli stessi dati al bottone compra
         [InlineKeyboardButton("✅ LO VOGLIO COMPRARE", callback_data=f'buy_{chiave_anno}_{chiave_materia}')],
-        [InlineKeyboardButton("🔙 Torna alle materie", callback_data=f'menu_{chiave_anno}')]
+        [InlineKeyboardButton("🔙 Scegli altra materia", callback_data=f'menu_{chiave_anno}')]
     ]
 
-    # Invia PRIMA il messaggio di testo (modificando quello precedente)
-    await query.edit_message_text(testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
-    
-    # 2. Invia DOPO il file PDF Demo
-    file_path = dati["file_demo"]
-    chat_id = query.message.chat_id
-    
-    if os.path.exists(file_path):
-        try:
-            with open(file_path, 'rb') as f:
-                await context.bot.send_document(
-                    chat_id=chat_id,
-                    document=f,
-                    caption=f"📄 Anteprima gratuita: {dati['nome']}"
-                )
-        except Exception as e:
-            # Se c'è un errore nell'invio del file (es. file troppo grande o corrotto)
-            print(f"Errore invio file: {e}")
-            await context.bot.send_message(chat_id, "⚠️ Errore nell'invio del PDF demo.")
-    else:
-        # Se il file non esiste sul server
-        await context.bot.send_message(chat_id, "⚠️ Demo PDF non ancora caricata (contatta l'admin).")
+    await context.bot.send_message(
+        chat_id=query.message.chat_id,
+        text=testo_descrizione,
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode='Markdown'
+    )
+
 
 # --- 4. GESTIONE ORDINE (Notifica all'Admin) ---
 async def richiesta_acquisto(update: Update, context: ContextTypes.DEFAULT_TYPE):
