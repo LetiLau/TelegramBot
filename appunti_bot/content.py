@@ -51,11 +51,19 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
 
 """
         }, #fine fisica 1
+
+
+
         
         "chimica": {
             "titolo": "🧪 Chimica",
-            #"prezzo": "10,00€",
             "file_demo": "appunti_bot/files/demo_chimica.pdf",
+
+            # --- PREZZI E CONFIGURAZIONE ---
+            "prezzo_singolo": 1.0,      # Prezzo numerico (float) per i calcoli
+            "prezzo_full": "10,00€",    # Testo per il pacchetto completo
+            "max_files": 21,            # Numero massimo di capitoli (per fare i bottoni)
+            # -------------------------------
 
             "prof": "Prof. Marco Armandi",
             "anno_accademico": "2024/2025",
@@ -73,24 +81,23 @@ Basati sulle slide, videolezioni del professore e sul libro di riferimento.
 Sono <i>scritti a mano</i>, organizzati in <i>singoli file</i> (in media 5-10 pagine) uno per ogni blocco di slide.
 Disponibili fino alla lezione 14 (successive presto in arrivo).
 
-📌 <b>Argomenti principali (con riferimento ai file):</b>
-• 1, 2, 3 - Materia, Modello Atomico, Teorie Atomiche
-• 4, 5 - Numeri quantici e orbitali, Configurazione elettronica
-• 6, 7 - Proprietà periodiche e legame ionico, Legame covalente
-• 8, 9 - Formule di struttura, Teoria VSEPR
-• 10 - Orbitali legame metallico forze intermolecolari
-• 11, 12, 13 - Gas, Stato liquido e diagrammi di fase, Soluzioni
-• 14, 15, 16 - Lo stato solido, Termochimica, Cinetica chimica
-• 17, 18 - Equilibrio chimico, Teorie acido base e PH
+📌 <b>Argomenti: (con riferimento ai singoli file):</b>
+• 1, 2, 3 - Materia / Modello Atomico / Teorie Atomiche
+• 4, 5 - Numeri quantici e orbitali / Configurazione elettronica
+• 6, 7 - Proprietà periodiche e legame ionico / Legame covalente
+• 8, 9 - Formule di struttura / Teoria VSEPR
+• 10 - Orbitali, legame metallico e forze intermolecolari
+• 11, 12, 13 - Gas / Stato liquido e diagrammi di fase / Soluzioni
+• 14, 15, 16 - Lo stato solido / Termochimica / Cinetica chimica
+• 17, 18 - Equilibrio chimico / Teorie acido base e PH
 • 19 - Equilibri e soluzioni acquose
-• 20, 21 - Elettrochimica, Chimica Organica
-
-<b>💰 1,00 € cadauno</b>
-<b>💰 Tutti 10,00€</b>
+• 20, 21 - Elettrochimica / Chimica Organica
 
 """
         }, #fine chimica
 
+
+        
         "algebra-geometria": {
             "titolo": "📐Algebra Lineare e Geometria",
             "prezzo": "5,00€",
