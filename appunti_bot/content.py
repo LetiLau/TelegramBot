@@ -37,7 +37,7 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
 • Cinematica e dinamica del punto
 • Moti relativi
 • Sistemi di punti, corpo rigido, urti
-• Termodinamica.
+• Termodinamica
 • Fluidodinamica
 • Gravitazione
 
