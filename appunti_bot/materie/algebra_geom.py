@@ -1,5 +1,6 @@
 import os
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ContextTypes
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ContextTypes  # <--- ContextTypes va importato da QUI
 
 # 1. Importiamo i dati e gli strumenti comuni
 from ..content import CATALOGO
