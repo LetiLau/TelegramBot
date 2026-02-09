@@ -3,8 +3,8 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes  # <--- ContextTypes va importato da QUI
 
 # 1. Importiamo i dati e gli strumenti comuni
-from ..content import CATALOGO
-from ..utils import invia_ordine_generico
+from appunti_bot.content import CATALOGO
+from appunti_bot.utils import invia_ordine_generico
 
 # Definiamo dove si trovano i dati nel catalogo
 # Così se sposti la materia in "anno_2", cambi solo qui.
