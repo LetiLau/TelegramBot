@@ -11,38 +11,22 @@ TOKEN = os.getenv("APPUNTI_BOT")
 
 # DATABASE DEI CORSI (Facile da espandere)
 # Struttura: Anno -> Codice_Materia -> Dettagli
-# CATALOGO = {
-#     "anno_1": {
-#         "fisica_1": {
-#             "nome": "⚛️ Fisica 1",
-#             "descrizione": "Teoria completa + Esercizi svolti. Ottimo per lo scritto.",
-#             "prezzo": "12,00€",
-#             "file_demo": "appunti_bot/files/demo-fisica1.pdf"
-#         },
-#         "chimica": {
-#             "nome": "🧪 Chimica",
-#             "descrizione": "Limiti, derivate, integrali e serie.",
-#             "prezzo": "10,00€",
-#             "file_demo": "appunti_bot/files/demo-chimica.pdf" # Esempio futuro
-#         }
-#     },
-#     "anno_2": {
-#         # Puoi aggiungere materie qui in futuro
-#     }
-# }
+
+# --> VEDERE FILE content.py
+
 
 # --- 1. MENU PRINCIPALE (Scelta Anno) ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Mostra la scelta dell'anno."""
     keyboard = [
         [InlineKeyboardButton("1️⃣ Primo Anno", callback_data='menu_anno_1')],
-        [InlineKeyboardButton("2️⃣ Secondo Anno (Presto...)", callback_data='menu_anno_2')],
+        [InlineKeyboardButton("2️⃣ Secondo Anno (In arrivo...)", callback_data='menu_anno_2')],
     ]
 
     user_name=update.effective_user.first_name
     
     testo = (
-        f"👋 Ciao {user_name}! Benvennuto nel **Bot degli Appunti**.\n\n"
+        f"👋 Ciao {user_name}! Benvenuto nel **Bot degli Appunti**.\n\n"
         "Seleziona il tuo anno per vedere le materie disponibili⬇️:"
     )
     
@@ -168,7 +152,6 @@ async def info_materia(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # --- 4. GESTIONE ORDINE (Notifica all'Admin) ---
-# --- 4. GESTIONE ORDINE (Versione Robusta Anti-Crash) ---
 async def richiesta_acquisto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -246,7 +229,7 @@ async def richiesta_acquisto(update: Update, context: ContextTypes.DEFAULT_TYPE)
         
         # Generiamo il link diretto alla tua chat
         # Se ADMIN_ID c'è usa tg://user, altrimenti serve il tuo username
-        url_contatto = f"tg://user?id={ADMIN_ID}" if ADMIN_ID else "https://t.me/TUO_USERNAME"
+        url_contatto = f"tg://user?id={ADMIN_ID}" if ADMIN_ID else "https://t.me/RedzFoxx"
         
         keyboard = [
             [InlineKeyboardButton("💬 Contatta Admin manualmente", url=url_contatto)]
