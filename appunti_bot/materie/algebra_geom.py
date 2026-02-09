@@ -1,29 +1,41 @@
+import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ContextTypes
-from ..utils import invia_ordine_generico
-from ..content import CATALOGO # Importiamo i dati se servono (demo, descrizioni)
 
-# Prefisso callback: alg_
+# 1. Importiamo i dati e gli strumenti comuni
+from ..content import CATALOGO
+from ..utils import invia_ordine_generico
+
+# Definiamo dove si trovano i dati nel catalogo
+# Così se sposti la materia in "anno_2", cambi solo qui.
+KEY_ANNO = "anno_1"
+KEY_MATERIA = "algebra-geometria"
+
+# Prefisso per le callback di questo file (deve combaciare con logic.py)
+PREFIX = "alg_" 
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Mostra la scheda del prodotto leggendo i dati dal Catalogo.
+    """
     query = update.callback_query
     
-    # Recuperiamo i dati dal catalogo
-    dati = CATALOGO["anno_1"]["algebra-geometria"]
-    
-    # Logica invio DEMO (semplificata)
-    file_demo = dati.get("file_demo")
-  
-    # 1. Pulizia: Cancelliamo il vecchio messaggio del menu precedente
+    # Recuperiamo i dati in modo sicuro
     try:
-        await query.message.delete()
-    except:
-        pass 
+        dati = CATALOGO[KEY_ANNO][KEY_MATERIA]
+    except KeyError:
+        await query.answer("Errore: Dati materia non trovati!", show_alert=True)
+        return
 
-    # 2. Gestione Invio File
+    # --- 1. GESTIONE INVIO DEMO (Standard) ---
+    file_path = dati.get("file_demo", "")
+    
+    # Cancelliamo il menu precedente per pulizia
+    try: await query.message.delete()
+    except: pass 
+
     if os.path.exists(file_path):
-        # Feedback visivo immediato
-        msg_wait = await context.bot.send_message(query.message.chat_id, "⏳ <i>Invio demo in corso...</i>", parse_mode='HTML')
-        
+        # Feedback "Sto inviando..."
+        msg_wait = await context.bot.send_message(query.message.chat_id, "⏳ <i>Invio demo...</i>", parse_mode='HTML')
         try:
             with open(file_path, 'rb') as f:
                 await context.bot.send_document(
@@ -32,50 +44,63 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     caption=f"📄 <b>Anteprima: {dati.get('titolo', 'Appunti')}</b>",
                     parse_mode='HTML'
                 )
-            # Se l'invio riesce, cancelliamo il messaggio "⏳ Invio in corso..."
             try: await msg_wait.delete()
             except: pass
-            
-        except Exception as e:
-            # Se qualcosa va storto nell'invio (es. file troppo grande)
-            await context.bot.edit_message_text(chat_id=query.message.chat_id, message_id=msg_wait.message_id, text="⚠️ Errore tecnico nell'invio del file.")
+        except: pass # Se fallisce l'invio (es. file corrotto), andiamo avanti lo stesso
     else:
-        # Se il file non esiste fisicamente sul server
-        # (Opzionale: puoi mandare un avviso o semplicemente non fare nulla e mostrare solo il testo sotto)
+        # Se non c'è il file, avvisiamo con un popup discreto
         await query.answer("⚠️ Demo PDF non ancora disponibile.", show_alert=True)
 
-    # --- FINE BLOCCO INVIO DEMO ---
+    # --- 2. COSTRUZIONE DEL MESSAGGIO ---
+    # Usiamo .get() per evitare crash se manca qualche campo
+    titolo = dati.get('titolo', 'Titolo N/D')
+    prof = dati.get('prof', 'Prof. N/D')
+    anno = dati.get('anno_accademico', '')
+    desc = dati.get('descrizione', 'Descrizione non disponibile.')
+    prezzo = dati.get('prezzo', 'N/D')
+    
+    # Formattazione lista formati
+    formati = dati.get('formati', [])
+    formati_txt = "\n".join([f"- {f}" for f in formati])
 
-  
     testo = (
-        f"📚 <b>{dati['titolo']}</b>\n"
-        f"👤 {dati['prof']}\n\n"
-        f"{dati['descrizione']}\n\n"
-        f"💰 Prezzo: <b>{dati['prezzo']}</b>"
+        f"📚 <b>{titolo}</b>\n"
+        f"👤 {prof} ({anno})\n\n"
+        f"{desc}\n\n"
+        f"💾 <b>Formati inclusi:</b>\n{formati_txt}\n\n"
+        f"💰 Prezzo: <b>{prezzo}</b>\n\n"
+        "Cosa vuoi fare?"
     )
     
+    # --- 3. PULSANTI ---
+    # Nota: alg_buy è il segnale per comprare
     kb = [
-        # Callback specifica: alg_buy
-        [InlineKeyboardButton("✅ LO VOGLIO COMPRARE", callback_data='alg_buy')],
-        [InlineKeyboardButton("🔙 Indietro", callback_data='main_start')]
+        [InlineKeyboardButton("✅ LO VOGLIO COMPRARE", callback_data=f'{PREFIX}buy')],
+        [InlineKeyboardButton("🔙 Indietro", callback_data='selAnno_' + KEY_ANNO)]
     ]
     
-    # Trucco: cancelliamo il vecchio menu per pulizia
-    try: await query.message.delete()
-    except: pass
-        
-    await context.bot.send_message(query.message.chat_id, testo, reply_markup=InlineKeyboardMarkup(kb), parse_mode='HTML')
+    await context.bot.send_message(
+        chat_id=query.message.chat_id, 
+        text=testo, 
+        reply_markup=InlineKeyboardMarkup(kb), 
+        parse_mode='HTML'
+    )
 
 async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    Gestisce i click sui pulsanti di questo modulo (quelli che iniziano con alg_)
+    """
     query = update.callback_query
     data = query.data
     
-    if data == 'alg_buy':
-        dati = CATALOGO["anno_1"]["algebra"]
-        # CHIAMIAMO UTILS PER CONCLUDERE
+    # Rileggiamo i dati per avere il prezzo aggiornato
+    dati = CATALOGO[KEY_ANNO][KEY_MATERIA]
+    
+    if data == f'{PREFIX}buy':
+        # Chiamiamo la funzione generica in utils.py
         await invia_ordine_generico(
             update, context,
-            titolo_materia="Algebra e Geometria",
+            titolo_materia=dati.get('titolo', 'Algebra'),
             dettaglio_ordine="Pacchetto Completo (Unica opzione)",
-            prezzo_totale=dati['prezzo']
+            prezzo_totale=dati.get('prezzo', 'N/D')
         )
