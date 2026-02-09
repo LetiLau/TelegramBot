@@ -1,8 +1,8 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes  # <--- ContextTypes va importato da QUI
 
-from ..utils import invia_ordine_generico
-from ..content import CATALOGO
+from appunti_bot.content import CATALOGO
+from appunti_bot.utils import invia_ordine_generico
 
 # Prefisso callback: f1_
 
