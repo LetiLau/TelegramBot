@@ -65,8 +65,8 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     formati_txt = "\n".join([f"- {f}" for f in formati])
 
     testo = (
-        f"📚 <b>{titolo}</b>\n"
-        f"👤 {prof} ({anno})\n\n"
+        f"📚  <b>{titolo}</b>\n"
+        f"👤 {prof}\n a.a. {anno}\n\n"
         f"{desc}\n\n"
         f"💾 <b>Formati inclusi:</b>\n{formati_txt}\n\n"
         f"💰 Prezzo: <b>{prezzo}</b>\n\n"
