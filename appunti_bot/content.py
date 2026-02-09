@@ -14,10 +14,10 @@ CATALOGO = {
             "titolo": "⚛️ Fisica 1",
             "tipo": "standard",
             "prezzo": "12,00€",
-            "file_demo": "appunti_bot/files/demo_fisica1.pdf",
+            "file_demo": "appunti_bot/files/demo-fisica1.pdf",
             
             # --- NUOVI CAMPI ---
-            "prof": "👤 Prof. Stefania Bufalino",
+            "prof": "Prof. Stefania Bufalino",
             "anno_accademico": "2024/2025",
             "libro": "Mazzoldi, Nigro, Voci - Elementi di Fisica (meccanica e termodinamica)",
             
@@ -50,7 +50,7 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
             #"prezzo": "10,00€",
             "file_demo": "appunti_bot/files/demo_chimica.pdf",
 
-            "prof": "👤 Prof. Marco Armandi",
+            "prof": "Prof. Marco Armandi",
             "anno_accademico": "2024/2025",
             "libro": "Silberberg - Chimica. La natura molecolare della materia e delle sue trasformazioni",
             
@@ -89,7 +89,7 @@ Disponibili fino alla lezione 14 (successive presto in arrivo).
             "prezzo": "5,00€",
             "file_demo": "appunti_bot/files/demo_algebra_geometria.pdf",
 
-            "prof": "👤 Prof Giovanni Manno",
+            "prof": "Prof Giovanni Manno",
             "anno_accademico": "2024/2025",
 
             "formati": [
