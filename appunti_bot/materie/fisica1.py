@@ -1,5 +1,6 @@
+import os  # <--- MANCAVA QUESTO
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ContextTypes  # <--- ContextTypes va importato da QUI
+from telegram.ext import ContextTypes
 
 from appunti_bot.content import CATALOGO
 from appunti_bot.utils import invia_ordine_generico
@@ -9,9 +10,12 @@ from appunti_bot.utils import invia_ordine_generico
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     dati = CATALOGO["anno_1"]["fisica_1"]
+    
+    # --- MANCAVA QUESTA RIGA ---
+    file_path = dati.get("file_demo", "") 
+    # ---------------------------
 
-  #invio demo
-    # 1. Pulizia: Cancelliamo il vecchio messaggio del menu precedente
+    # 1. Pulizia: Cancelliamo il vecchio messaggio
     try:
         await query.message.delete()
     except:
@@ -19,9 +23,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # 2. Gestione Invio File
     if os.path.exists(file_path):
-        # Feedback visivo immediato
         msg_wait = await context.bot.send_message(query.message.chat_id, "⏳ <i>Invio demo in corso...</i>", parse_mode='HTML')
-        
         try:
             with open(file_path, 'rb') as f:
                 await context.bot.send_document(
@@ -30,20 +32,15 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     caption=f"📄 <b>Anteprima: {dati.get('titolo', 'Appunti')}</b>",
                     parse_mode='HTML'
                 )
-            # Se l'invio riesce, cancelliamo il messaggio "⏳ Invio in corso..."
             try: await msg_wait.delete()
             except: pass
-            
         except Exception as e:
-            # Se qualcosa va storto nell'invio (es. file troppo grande)
             await context.bot.edit_message_text(chat_id=query.message.chat_id, message_id=msg_wait.message_id, text="⚠️ Errore tecnico nell'invio del file.")
     else:
-        # Se il file non esiste fisicamente sul server
-        # (Opzionale: puoi mandare un avviso o semplicemente non fare nulla e mostrare solo il testo sotto)
+        # Se vuoi nascondere l'avviso se il file non c'è, commenta questa riga:
         await query.answer("⚠️ Demo PDF non ancora disponibile.", show_alert=True)
 
-  # --- FINE BLOCCO INVIO DEMO ---
-    
+    # --- TESTO E BOTTONI ---
     testo = (
         f"📚 <b>{dati['titolo']}</b>\n\n"
         "Scegli cosa acquistare:\n"
@@ -57,9 +54,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("🔙 Indietro", callback_data='main_start')]
     ]
     
-    try: await query.message.delete()
-    except: pass
-    
+    # Invio messaggio menu
     await context.bot.send_message(query.message.chat_id, testo, reply_markup=InlineKeyboardMarkup(kb), parse_mode='HTML')
 
 
