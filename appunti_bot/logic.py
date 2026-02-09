@@ -8,6 +8,8 @@ from .content import CATALOGO
 # 2. Importiamo i moduli specifici (le Logiche di vendita)
 from .materie import fisica1, chimica, algebra_geom, elettrom_elettrotec
 
+TOKEN = os.getenv("APPUNTI_BOT")
+
 # 3. MAPPA DI COLLEGAMENTO
 # Associa la "chiave" del catalogo al "modulo python" che deve gestirla
 # Esempio: se nel catalogo c'è "fisica_1", usa il file 'fisica1.py'
@@ -128,9 +130,8 @@ async def router(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # --- SETUP ---
 def setup_bot():
-    token = os.getenv("TOKEN_BOT_APPUNTI")
-    if not token: return None
-    app = ApplicationBuilder().token(token).build()
+    if not TOKEN: return None
+    app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(router))
     return app
