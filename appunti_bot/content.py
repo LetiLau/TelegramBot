@@ -12,8 +12,11 @@ CATALOGO = {
         "fisica_1": {
             # --- DATI OBBLIGATORI ---
             "titolo": "⚛️ Fisica 1",
-            "tipo": "standard",
-            "prezzo": "12,00€",
+            #"tipo": "standard",
+            
+            "prezzo": "12,00€",       # Prezzo base (Solo Appunti)
+            "prezzo_full": "16,00€",  # NUOVO: Prezzo Pacchetto Completo
+            
             "file_demo": "appunti_bot/files/demo-fisica1.pdf",
             
             # --- NUOVI CAMPI ---
@@ -41,6 +44,10 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
 • Termodinamica
 • Fluidodinamica
 • Gravitazione
+
+👇 <b>SCEGLI LA TUA VERSIONE:</b>
+1️⃣ <b>Solo appunti </b> di teoria
+2️⃣ <b>Pacchetto FULL:</b> Include anche vari file di scansione di risoluzione di temi d'esame (Bufalino), formulario pronto all'uso.
 
 """
         }, #fine fisica 1
