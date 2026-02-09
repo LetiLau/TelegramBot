@@ -1,29 +1,33 @@
-import os  # <--- MANCAVA QUESTO
+import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 
 from appunti_bot.content import CATALOGO
 from appunti_bot.utils import invia_ordine_generico
 
-# Prefisso callback: f1_
+# Chiavi per il catalogo
+KEY_ANNO = "anno_1"
+KEY_MATERIA = "fisica_1"
+
+# Prefisso callback
+PREFIX = "f1_"
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    dati = CATALOGO["anno_1"]["fisica_1"]
     
-    # --- MANCAVA QUESTA RIGA ---
-    file_path = dati.get("file_demo", "") 
-    # ---------------------------
-
-    # 1. Pulizia: Cancelliamo il vecchio messaggio
     try:
-        await query.message.delete()
-    except:
-        pass 
+        dati = CATALOGO[KEY_ANNO][KEY_MATERIA]
+    except KeyError:
+        await query.answer("Errore catalogo!", show_alert=True)
+        return
 
-    # 2. Gestione Invio File
+    # --- INVIO DEMO ---
+    file_path = dati.get("file_demo", "")
+    try: await query.message.delete()
+    except: pass 
+
     if os.path.exists(file_path):
-        msg_wait = await context.bot.send_message(query.message.chat_id, "⏳ <i>Invio demo in corso...</i>", parse_mode='HTML')
+        msg_wait = await context.bot.send_message(query.message.chat_id, "⏳ <i>Invio demo...</i>", parse_mode='HTML')
         try:
             with open(file_path, 'rb') as f:
                 await context.bot.send_document(
@@ -34,46 +38,70 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
             try: await msg_wait.delete()
             except: pass
-        except Exception as e:
-            await context.bot.edit_message_text(chat_id=query.message.chat_id, message_id=msg_wait.message_id, text="⚠️ Errore tecnico nell'invio del file.")
+        except: pass
     else:
-        # Se vuoi nascondere l'avviso se il file non c'è, commenta questa riga:
-        await query.answer("⚠️ Demo PDF non ancora disponibile.", show_alert=True)
+        await query.answer("⚠️ Demo non disponibile", show_alert=True)
 
-    # --- TESTO E BOTTONI ---
+    # --- RECUPERO DATI ---
+    titolo = dati.get('titolo', 'Titolo N/D')
+    prof = dati.get('prof', 'Prof. N/D')
+    anno = dati.get('anno_accademico', 'N/D')
+    desc = dati.get('descrizione', '')
+    
+    # Prezzi letti dal catalogo
+    p_base = dati.get('prezzo', 'N/D')      # Prezzo solo appunti
+    p_full = dati.get('prezzo_full', 'N/D') # Prezzo pacchetto
+    
+    formati = dati.get('formati', [])
+    formati_txt = ", ".join(formati) # Es: "PDF, Notewise"
+
+    # --- TESTO MESSAGGIO ---
     testo = (
-        f"📚 <b>{dati['titolo']}</b>\n\n"
-        "Scegli cosa acquistare:\n"
-        "1️⃣ <b>Solo Appunti (12€)</b>: Teoria + Esercizi lezione\n"
-        "2️⃣ <b>FULL Pack (16€)</b>: Appunti + Eserciziario Extra + Formulario"
+        f"📚 <b>{titolo}</b>\n"
+        f"👤 {prof} (a.a. {anno})\n\n"
+        f"{desc}\n"
+        f"💾 <b>Formati:</b> {formati_txt}\n\n"
+        "👇 <b>Seleziona l'opzione di acquisto:</b>"
     )
     
+    # --- BOTTONI DINAMICI ---
     kb = [
-        [InlineKeyboardButton("1️⃣ Solo Appunti (12€)", callback_data='f1_buy_base')],
-        [InlineKeyboardButton("2️⃣ FULL Pack (16€)", callback_data='f1_buy_full')],
-        [InlineKeyboardButton("🔙 Indietro", callback_data='main_start')]
+        # Tasto 1: Solo Appunti (legge p_base)
+        [InlineKeyboardButton(f"1️⃣ Solo Appunti ({p_base})", callback_data=f'{PREFIX}buy_base')],
+        
+        # Tasto 2: Pacchetto Full (legge p_full)
+        [InlineKeyboardButton(f"2️⃣ Pacchetto FULL ({p_full})", callback_data=f'{PREFIX}buy_full')],
+        
+        [InlineKeyboardButton("🔙 Indietro", callback_data='selAnno_' + KEY_ANNO)]
     ]
     
-    # Invio messaggio menu
-    await context.bot.send_message(query.message.chat_id, testo, reply_markup=InlineKeyboardMarkup(kb), parse_mode='HTML')
+    await context.bot.send_message(
+        chat_id=query.message.chat_id, 
+        text=testo, 
+        reply_markup=InlineKeyboardMarkup(kb), 
+        parse_mode='HTML'
+    )
 
 
 async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     data = query.data
     
-    if data == 'f1_buy_base':
+    # Rileggiamo i dati per avere i prezzi aggiornati
+    dati = CATALOGO[KEY_ANNO][KEY_MATERIA]
+    
+    if data == f'{PREFIX}buy_base':
         await invia_ordine_generico(
             update, context,
-            titolo_materia="Fisica 1",
-            dettaglio_ordine="Solo Appunti",
-            prezzo_totale="12,00€"
+            titolo_materia=dati.get('titolo'),
+            dettaglio_ordine="Solo Appunti (Versione Base)",
+            prezzo_totale=dati.get('prezzo') # Legge 12€
         )
         
-    elif data == 'f1_buy_full':
+    elif data == f'{PREFIX}buy_full':
         await invia_ordine_generico(
             update, context,
-            titolo_materia="Fisica 1",
+            titolo_materia=dati.get('titolo'),
             dettaglio_ordine="🔴 PACCHETTO FULL (+Extra)",
-            prezzo_totale="16,00€"
+            prezzo_totale=dati.get('prezzo_full') # Legge 16€
         )
