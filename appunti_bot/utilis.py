@@ -1,5 +1,6 @@
 import os
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ContextTypes
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ContextTypes  # <--- ContextTypes va importato da QUI
 
 # Prende l'ID dalle variabili d'ambiente
 ADMIN_ID = os.getenv("ADMIN_ID")
