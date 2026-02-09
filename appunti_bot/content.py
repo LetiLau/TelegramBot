@@ -12,6 +12,7 @@ CATALOGO = {
         "fisica_1": {
             # --- DATI OBBLIGATORI ---
             "titolo": "⚛️ Fisica 1",
+            "tipo": "standard",
             "prezzo": "12,00€",
             "file_demo": "appunti_bot/files/demo_fisica1.pdf",
             
