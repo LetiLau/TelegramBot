@@ -41,10 +41,12 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Formattazione lista formati
     formati = dati.get('formati', [])
-    formati_txt = "\n".join([f"- {f}" for f in formati])ù
+    formati_txt = "\n".join([f"- {f}" for f in formati])
 
     anno = dati.get('anno_accademico', 'N/D')
     libro = dati.get('libro', 'N/D')
+
+    prof = dati.get('prof', 'N/D')
     
     testo = (
         f"<b>{dati.get('titolo')}</b>\n"
