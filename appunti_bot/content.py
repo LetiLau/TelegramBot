@@ -78,14 +78,8 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
                 "PDF non modificabile (colori o bianco e nero)", 
                 "Notewise (versione app gratuita Android/IOS), modificabile"
             ],
-            
-            "descrizione": """
-Appunti completamente sostitutivi alle <b>lezioni di teoria</b>. 
-Basati sulle slide, videolezioni del professore e sul libro di riferimento.
-Sono <i>scritti a mano</i> (chiari e leggibili), organizzati in <i>singoli file</i> (in media 5-10 pagine) uno per ogni blocco di slide.
-<b>Disponibili fino alla lezione 14</b> (successive presto in arrivo).
 
-📌 <b>Argomenti: (con riferimento ai singoli file):</b>
+            "lista_capitoli": """
 • 1, 2, 3 - Materia / Modello Atomico / Teorie Atomiche
 • 4, 5 - Numeri quantici e orbitali / Configurazione elettronica
 • 6, 7 - Proprietà periodiche e legame ionico / Legame covalente
@@ -96,8 +90,17 @@ Sono <i>scritti a mano</i> (chiari e leggibili), organizzati in <i>singoli file<
 • 17, 18 - Equilibrio chimico / Teorie acido base e PH
 • 19 - Equilibri e soluzioni acquose
 • 20, 21 - Elettrochimica / Chimica Organica
-
 """
+            
+            "descrizione": """
+Appunti completamente sostitutivi alle <b>lezioni di teoria</b>. 
+Basati sulle slide, videolezioni del professore e sul libro di riferimento.
+Sono <i>scritti a mano</i> (chiari e leggibili), organizzati in <i>singoli file</i> (in media 5-10 pagine) uno per ogni blocco di slide.
+<b>Disponibili fino alla lezione 14</b> (successive presto in arrivo).
+
+📌 <b>Argomenti: (con riferimento ai singoli file):</b>"""
+
+            
         }, #fine chimica
 
 
