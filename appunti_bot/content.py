@@ -26,7 +26,7 @@ CATALOGO = {
             
             # Elenco dei formati (puoi metterne quanti vuoi)
             "formati": [
-                "PDF (Indice Cliccabile), colori/bianco e nero",
+                "PDF (indice cliccabile), colori/bianco e nero",
                 "Notewise (versione app gratuita Android/IOS), modificabile"
             ],
 
@@ -78,7 +78,7 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
             "descrizione": """
 Appunti completamente sostitutivi alle <b>lezioni di teoria</b>. 
 Basati sulle slide, videolezioni del professore e sul libro di riferimento.
-Sono <i>scritti a mano</i>, organizzati in <i>singoli file</i> (in media 5-10 pagine) uno per ogni blocco di slide.
+Sono <i>scritti a mano</i> (chiari e leggibili), organizzati in <i>singoli file</i> (in media 5-10 pagine) uno per ogni blocco di slide.
 Disponibili fino alla lezione 14 (successive presto in arrivo).
 
 📌 <b>Argomenti: (con riferimento ai singoli file):</b>
@@ -118,7 +118,7 @@ Disponibili fino alla lezione 14 (successive presto in arrivo).
 • con formulari e metodi risolutivi (24 pagine)
 • comandi matlab (6 pagine + file al computer con i codici)
 
-<i>Scritti a mano</i>, colorati, comprensivi dei codici da usare per gli esercizi al computer.
+<i>Scritti a mano</i> in calligrafia chiara e leggibile, colorati, comprensivi dei <u>codici</u> da usare per gli esercizi al computer.
 Acquistabili come intero pacchetto.
 
 """
@@ -139,10 +139,6 @@ Acquistabili come intero pacchetto.
             "prezzo_completo": "14,00€",
             "libri_full": "Mazzoldi, Nigro, Voci - Fisica Vol. II Elettromagnetismo e onde\nYoung, Freedman, Ford - Principi di Fisica Vol 2 Elettromagnetismo e Ottica\nPerfetti - Circuiti elettrici",
             "anno_accademico": "2025/2026",
-
-          
-            # --- NUOVI CAMPI ---
-            "prof": "Prof. Stefania Bufalino",
     
         
             # Elenco dei formati full (puoi metterne quanti vuoi)
@@ -179,7 +175,7 @@ Per i dettagli specifici vedere la descrizione dei singoli pacchetti.
                 ],
                 "descrizione": """
 
-Appunti <b>scritti a mano colorati</b> per facililatare la comprensione. Basati sulle lezioni del professore e sulle slide del corso.
+Appunti <b>scritti a mano</b> <i>chiari, leggibili e colorati</i> per facililatare la comprensione. Basati sulle <u>lezioni</u> del professore e sulle <u>slide</u> del corso.
 Contengono tutte le <u>formule da usare</u> (applicando i teoremi), note teoriche di precisazione
 
 📌 <b>Argomenti trattati:</b>
@@ -211,7 +207,7 @@ Contengono tutte le <u>formule da usare</u> (applicando i teoremi), note teorich
                 "descrizione": """
 
 Gli appunti di <i>teoria di Fisica 2</i> (senza dimostrazioni) sono stati generati da IA basandosi sulle slide del professore, <u>motivo per cui il loro prezzo è estremamente ridotto</u>. 
-Tuttavia sono stati completamente <b>ricorretti e modificati da me</b> con aggiunta di dettagli, note teoriche per i quiz e immagini dei libri.
+Tuttavia sono stati completamente <b>ricorretti e modificati da me</b> con aggiunta di <u>dettagli, note teoriche per i quiz e immagini dei libri</u>.
 Sono scritti in formato .md (markdown, ovvero file di testo formattato) e disponibili anche in PDF.
 (Visto che sono molto <u>completi ho pensato di metterli comunque a disposizione</u>)
 
