@@ -49,7 +49,7 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
 
 👇 <b>SCEGLI LA TUA VERSIONE:</b>
 1️⃣ <b>Solo appunti </b> di teoria
-2️⃣ <b>Pacchetto FULL (N/D):
+2️⃣ <b>Pacchetto FULL:
     </b>Include anche vari file di scansione di risoluzione di temi d'esame (Bufalino), formulario pronto all'uso.
 
 """
