@@ -60,9 +60,9 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     testo = (
         f"<b>{titolo}</b>\n"
         f"👤 {prof} (a.a. {anno})\n\n"
-        f"📚 Libro di riferimento: {libro}"
+        f"📚 Libro di riferimento: {libro}\n"
         f"{desc}\n"
-        f"💾 <b>Formati disponibili:</b> {formati_txt}\n\n"
+        f"💾 <b>Formati disponibili:</b>\n {formati_txt}\n\n"
         "👇 <b>Seleziona l'opzione di acquisto:</b>"
     )
     
