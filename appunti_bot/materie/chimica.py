@@ -41,14 +41,19 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Formattazione lista formati
     formati = dati.get('formati', [])
-    formati_txt = "\n".join([f"- {f}" for f in formati])
+    formati_txt = "\n".join([f"- {f}" for f in formati])ù
+
+    anno = dati.get('anno_accademico', 'N/D')
+    libro = dati.get('libro', 'N/D')
     
     testo = (
         f"<b>{dati.get('titolo')}</b>\n"
-        f"👤 {dati.get('prof')}\n\n"
-        f"{dati.get('descrizione')}\n\n"
-        f"💾 <b>Formati inclusi:</b>\n{formati_txt}\n\n"
-        f"💰 Prezzo per singolo file: <b>{p_sing}</b>\n"
+        f"👤 {prof} (a.a. {anno})\n\n"
+        f"📚 Libro di riferimento: {libro}\n"
+        f"{dati.get('descrizione')}\n"
+        f"{dati.get('lista_capitoli', "<u>Elenco non disponibile</u>")}"
+        f"💾 <b>Formati disponibili:</b>\n{formati_txt}\n\n"
+        f"💰 Prezzo per singolo file: <b>{p_sing}€</b>\n"
         f"💰 Prezzo per tutti i file: <b>{p_full}</b>\n\n"
         "👇 <b>Come vuoi acquistarli?</b>"
     )
@@ -109,10 +114,16 @@ async def menu_selezione(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard.append([InlineKeyboardButton(btn_txt, callback_data=callback)])
     keyboard.append([InlineKeyboardButton("🔙 Annulla", callback_data=f"open_{KEY_ANNO}_{KEY_MATERIA}")]) # Torna al menu chimica
 
+    # --- RECUPERO LA LEGENDA ---
+    legenda = dati.get("lista_capitoli", "Elenco non disponibile")
+
+    # --- CREAZIONE MESSAGGIO CON ELENCO ---
     testo = (
-        "📝 <b>Selezione Capitoli</b>\n"
-        "Clicca sui numeri per aggiungere/rimuovere i file.\n"
-        f"Totale attuale: <b>{totale:.2f}€</b>"
+        "📝 <b>Selezione Capitoli</b>\n\n"
+        f"{legenda}\n"  # <--- Ecco la lista stampata!
+        "------------------------------\n"
+        "👇 <b>Clicca sui numeri per selezionarli:</b>\n"
+        f"💰 Totale attuale: <b>{totale:.2f}€</b>"
     )
     
     # Modifichiamo il messaggio esistente per non fare spam
