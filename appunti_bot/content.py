@@ -15,7 +15,9 @@ CATALOGO = {
             #"tipo": "standard",
             
             "prezzo": "12,00€",       # Prezzo base (Solo Appunti)
-            "prezzo_full": "16,00€",  # NUOVO: Prezzo Pacchetto Completo
+
+    # togliere commento
+            #"prezzo_full": "16,00€",  # NUOVO: Prezzo Pacchetto Completo
             
             "file_demo": "appunti_bot/files/demo-fisica1.pdf",
             
@@ -47,9 +49,11 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
 
 👇 <b>SCEGLI LA TUA VERSIONE:</b>
 1️⃣ <b>Solo appunti </b> di teoria
-2️⃣ <b>Pacchetto FULL:</b> Include anche vari file di scansione di risoluzione di temi d'esame (Bufalino), formulario pronto all'uso.
+2️⃣ <b>Pacchetto FULL (N/D):
+    </b>Include anche vari file di scansione di risoluzione di temi d'esame (Bufalino), formulario pronto all'uso.
 
 """
+    #toglli N/D per pacchetto FULL
         }, #fine fisica 1
 
 
@@ -57,7 +61,7 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
         
         "chimica": {
             "titolo": "🧪 Chimica",
-            "file_demo": "appunti_bot/files/demo-chimica.pdf",
+            "file_demo": "appunti_bot/files/demo-chimica14.pdf",
 
             # --- PREZZI E CONFIGURAZIONE ---
             "prezzo_singolo": 1.0,      # Prezzo numerico (float) per i calcoli
@@ -79,7 +83,7 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
 Appunti completamente sostitutivi alle <b>lezioni di teoria</b>. 
 Basati sulle slide, videolezioni del professore e sul libro di riferimento.
 Sono <i>scritti a mano</i> (chiari e leggibili), organizzati in <i>singoli file</i> (in media 5-10 pagine) uno per ogni blocco di slide.
-Disponibili fino alla lezione 14 (successive presto in arrivo).
+<b>Disponibili fino alla lezione 14</b> (successive presto in arrivo).
 
 📌 <b>Argomenti: (con riferimento ai singoli file):</b>
 • 1, 2, 3 - Materia / Modello Atomico / Teorie Atomiche
