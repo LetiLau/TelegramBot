@@ -67,6 +67,7 @@ async def show_full_package(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     formati = dati.get('formati_full', [])
     formati_txt = "\n".join([f"- {f}" for f in formati])
+    libri = dati.get('libri_full', 'N/D')
 
     global anno
     anno = dati.get('anno_accademico', 'N/D')
@@ -76,8 +77,9 @@ async def show_full_package(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Include Elettrotecnica & Fisica 2.\n\n"
         f"👤 <b>Prof:</b> {prof_el} & {prof_f2}\n"
         f"a.a {anno}\n\n"
+        f"📚 Libro di riferimento: {libri}\n"
         f"{dati.get('descrizione_full')}\n\n"
-        f"💾 <b>Formati inclusi:</b> {formati}\n"
+        f"💾 <b>Formati disponibili:</b> {formati_txt}\n"
         f"💰 Prezzo Totale: <b>{dati.get('prezzo_completo')}</b>"
     )
     
@@ -96,10 +98,13 @@ async def show_elettro(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     formati = dati.get('formati', [])
     formati_txt = "\n".join([f"- {f}" for f in formati])
+
+    libro = dati.get('libro', 'N/D')
     
     testo = (
         f"<b>{dati['nome']}</b>\n"
         f"👤 {dati['prof']} (a.a. {anno})\n\n"
+        f"📚 Libro di riferimento: {libro}\n"
         f"{dati['descrizione']}\n\n"
         f"💾 <b>Formati disponibili:</b> {formati}\n"
         f"💰 Prezzo: <b>{dati['prezzo']}</b>"
@@ -121,13 +126,15 @@ async def show_fisica2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     formati = dati.get('formati', [])
     formati_txt = "\n".join([f"- {f}" for f in formati])
     
-    
     p_base = dati.get("prezzo_base")
     p_full = dati.get("prezzo_full")
+
+    libro = dati.get('libro', 'N/D')
     
     testo = (
         f"<b>{dati['nome']}</b>\n"
         f"👤 {dati['prof']} (a.a. {anno})\n\n"
+        f"📚 Libro di riferimento: {libro}\n"
         f"{dati['descrizione']}\n\n"
         f"💾 <b>Formati disponibili:</b> {formati}\n\n"
         "👇 <b>Scegli la versione che vuoi acquistare:</b>"
