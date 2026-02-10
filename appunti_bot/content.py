@@ -100,7 +100,7 @@ Disponibili fino alla lezione 14 (successive presto in arrivo).
         
         "algebra-geometria": {
             "titolo": "📐Algebra Lineare e Geometria",
-            "prezzo": "5,00€",
+            "prezzo": "4,00€",
             "file_demo": "appunti_bot/files/demo-algebra_geometria.pdf",
 
             "prof": "Prof Giovanni Manno",
@@ -112,6 +112,7 @@ Disponibili fino alla lezione 14 (successive presto in arrivo).
             ],
 
             "descrizione": """
+            
 📌 Schemi riassuntivi:
 • per volgimento dei quiz esame scritto (5 pagine)
 • con formulari e metodi risolutivi (24 pagine)
@@ -125,18 +126,18 @@ Acquistabili come intero pacchetto.
         }, #fine algebra
         
   }, #fine anno 1
-        
-  
+
+    
  
     "anno_2": {
-        
+    
       "elettrom_elettrotec": {
             # --- DATI OBBLIGATORI ---
             "titolo": "⚡🧲 Elettromagnetismo e Teoria dei circuiti",
             #"tipo": "standard",
             "file_demo": "appunti_bot/files/demo-elettromag_elettrotec.pdf",
-            "prezzo_completo": "13,00€",
-            "libri_full": "Mazzoldi, Nigro, Voci - Fisica Vol. II Elettromagnetismo e onde\nYoung, Freedman, Ford - Principi di Fisica Vol 2 Elettromagnetismo e Ottica\nPerfetti - Circuiti elettrici"
+            "prezzo_completo": "14,00€",
+            "libri_full": "Mazzoldi, Nigro, Voci - Fisica Vol. II Elettromagnetismo e onde\nYoung, Freedman, Ford - Principi di Fisica Vol 2 Elettromagnetismo e Ottica\nPerfetti - Circuiti elettrici",
             "anno_accademico": "2025/2026",
 
           
@@ -154,11 +155,15 @@ Acquistabili come intero pacchetto.
 
             # Descrizione lunga (HTML)
             "descrizione_full": """
-📌Include l'intero corso diviso nei due moduli ufficiali.
+
+📌Include l'intero corso diviso nei due moduli ufficiali. 
+Comprende teoria fisica 2, regole e teoria elettrotecnica, svolgimento esericizi d'esame di fisica 2 (elenco nel dettaglio di fisica), svolgimenti prove d'esame di elettrotecnica.
 ✅ <b>Modulo Elettrotecnica:</b>
 Circuiti fondamentali / partitori / analisi nodale / amplificatori operazionali / Millman / Thevenin / Norton / principio sostituzione / circuiti RL, RC, del secondo ordine / fasori / potenze / Bode.
 ✅ <b>Modulo Fisica 2:</b>
 Elettrostatica (lavoro ed energia, potenziale, forze, campo elettrico, conduttori) / Gauss / eqauzioni di Maxwell / corrente elettrica / magnetostatica / legge di Ampère / Biot-Savart / campi elettrici e magnetici variabili nel tempo / onde elettromagnetiche
+
+Per i dettagli specifici vedere la descrizione dei singoli pacchetti.
 
 """,            
 
@@ -173,8 +178,26 @@ Elettrostatica (lavoro ed energia, potenziale, forze, campo elettrico, conduttor
                     "Notewise (versione app gratuita Android/IOS), modificabile"
                 ],
                 "descrizione": """
-                
-                """
+
+Appunti <b>scritti a mano colorati</b> per facililatare la comprensione. Basati sulle lezioni del professore e sulle slide del corso.
+Contengono tutte le <u>formule da usare</u> (applicando i teoremi), note teoriche di precisazione
+
+📌 <b>Argomenti trattati:</b>
+• Elenco di regole generali per l'analisi dei circuiti
+• Convenzioni sui circuiti / leggi di Kirchhoff / potenza assorbita e generata / energia assorbita da un dipolo
+• Leggi di ohm
+• Generatori ideali indipendenti e dipendenti / bipoli equivalenti per generatori reali
+• Connessione di bipoli / equivalenete di più generatori
+• Metodo dei nodi con genetaori corrente e tensione / gestione di un supernodo / metodo del tableau (matrici)
+• Partitori di tensione e corrente / teorema di Tellegen / principio sovrapposizione degli effetti / principio di sostituzione
+• Amplificatori operazionali
+• Teoremi di Millman / Thevenin / Norton
+• Metodo del pilota e del generatore di prova
+• Condensatori / induttori / circuiti RC e RL / metodo sistematico / circuiti del secondo ordine
+• Generatori sinusoidali / fasori / potenza attiva, reattiva, apparente, complessa
+• Funzioni di trasferimento / (teoria dei filtri) / diagrammi di Bode
+
+"""
             },
 
             # --- SOTTO-MODULO 2: FISICA 2 ---
@@ -187,31 +210,31 @@ Elettrostatica (lavoro ed energia, potenziale, forze, campo elettrico, conduttor
                 "formati": ["PDF non modificabile", "Notewise (versione app gratuita Android/IOS), modificabile", "Samsung Notes modificabile", "Markdown modificabile"],
                 "descrizione": """
 
-                Gli appunti di <i>teoria di Fisica 2</i> (senza dimostrazioni) sono stati generati da IA basandosi sulle slide del professore, <u>motivo per cui il loro prezzo è estremamente ridotto</u>. 
-                Tuttavia sono stati completamente <b>ricorretti e modificati da me</b> con aggiunta di dettagli, note teoriche per i quiz e immagini dei libri.
-                Sono scritti in formato .md (markdown, ovvero file di testo formattato) e disponibili anche in PDF.
-                (Visto che sono molto <u>completi ho pensato di metterli comunque a disposizione</u>)
+Gli appunti di <i>teoria di Fisica 2</i> (senza dimostrazioni) sono stati generati da IA basandosi sulle slide del professore, <u>motivo per cui il loro prezzo è estremamente ridotto</u>. 
+Tuttavia sono stati completamente <b>ricorretti e modificati da me</b> con aggiunta di dettagli, note teoriche per i quiz e immagini dei libri.
+Sono scritti in formato .md (markdown, ovvero file di testo formattato) e disponibili anche in PDF.
+(Visto che sono molto <u>completi ho pensato di metterli comunque a disposizione</u>)
 
-                Gli <i>esercizi</i> invece sono quelli che poi possono uscire all'esame (aggiornati all'a.a. specificato) e sono <b>completamente riscritti e risvolti a mano da me</b> (scritti a colori su tablet per facilitare comprensione). 
-                Sono tratti dal libro Mazzoldi.
-                
-                📌 <b>Argomenti: (con riferimento ai singoli capitoli):</b>
-                • 1, 2, 3, 4 - Processi di carica / Coulomb e campo elettrico / Linee di forza / Lavoro e potenziale / Gradiente, rotore, divergenza / Gauss / Condensatori
-                • 6 - Modello di conduzione della corrente / Legge di Ohm e Resistenze / Potenza elettrica, Effetto Joule e densità di potenza
-                • 7, 8 - Campo Magnetico / forza magnetica / sorgenti del campo / legge di Ampère
-                • 10 - Legge di Faraday-Neumann-Lenz / legge di Felici / induttanza / circuiti RL (transitori) / energia magnetica e densità di energia / mutua induzione / corrente di spostamento / equazioni di Maxwell in forma integrale e locale
-                • 12 - Onde elettromagnetiche: Differenze tra onde elastiche ed elettromagnetiche / velocità della luce / relazione tra i moduli dei campi e propagazione nella materia (indice di rifrazione) / vettore di Poynting / densità di energia / intensità / pressione di radiazione / polarizzazione, legge di Malus, circolare ed ellittica / vettore d'onda / radiazione e resistenza di radiazione.
+Gli <i>esercizi</i> invece sono quelli che poi possono uscire all'esame (aggiornati all'a.a. specificato) e sono <b>completamente riscritti e risvolti a mano da me</b> (scritti a <i>colori su tablet per facilitare comprensione</i>). 
+Sono tratti dal libro Mazzoldi.
 
-                ✏️ <b>Elenco degli esercizi:</b>
-                Tratti dal libro Mazzoldi con riferimento ai capitoli
-                • 1 - 2, 3, 8
-                • 2 - 1, 5, 7
-                • 3 - 2, 3, 5, 9
-                • 4 - 1, 5
-                • 7 - 1, 4, 6, 7, 10, 11, 12, 13, 9
-                • 8 - 1, 2, 3, 4, 6, 7, 8, 10, 11, 12
-                • 10 - 1, 2, 4, 6, 7, 9, 12, 13, 15, 16, 21, 23
-                • 13 - 2, 3, 4, 5, 8, 9
+📌 <b>Argomenti: (con riferimento ai singoli capitoli):</b>
+• 1, 2, 3, 4 - Processi di carica / Coulomb e campo elettrico / Linee di forza / Lavoro e potenziale / Gradiente, rotore, divergenza / Gauss / Condensatori
+• 6 - Modello di conduzione della corrente / Legge di Ohm e Resistenze / Potenza elettrica, Effetto Joule e densità di potenza
+• 7, 8 - Campo Magnetico / forza magnetica / sorgenti del campo / legge di Ampère
+• 10 - Legge di Faraday-Neumann-Lenz / legge di Felici / induttanza / circuiti RL (transitori) / energia magnetica e densità di energia / mutua induzione / corrente di spostamento / equazioni di Maxwell in forma integrale e locale
+• 12 - Onde elettromagnetiche: Differenze tra onde elastiche ed elettromagnetiche / velocità della luce / relazione tra i moduli dei campi e propagazione nella materia (indice di rifrazione) / vettore di Poynting / densità di energia / intensità / pressione di radiazione / polarizzazione, legge di Malus, circolare ed ellittica / vettore d'onda / radiazione e resistenza di radiazione.
+
+✏️ <b>Elenco degli esercizi:</b>
+Tratti dal libro Mazzoldi con riferimento ai capitoli (nota: potrebbero variare in base all'edizione)
+• 1 - 2, 3, 8
+• 2 - 1, 5, 7
+• 3 - 2, 3, 5, 9
+• 4 - 1, 5
+• 7 - 1, 4, 6, 7, 10, 11, 12, 13, 9
+• 8 - 1, 2, 3, 4, 6, 7, 8, 10, 11, 12
+• 10 - 1, 2, 4, 6, 7, 9, 12, 13, 15, 16, 21, 23
+• 13 - 2, 3, 4, 5, 8, 9
                 
                 """
             } #fine fisica 2
@@ -219,6 +242,9 @@ Elettrostatica (lavoro ed energia, potenziale, forze, campo elettrico, conduttor
         }, #fine elettorm elettrotec
 
 
+
+
+        
       
       #altre materie
   
