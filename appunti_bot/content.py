@@ -57,7 +57,7 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
         
         "chimica": {
             "titolo": "🧪 Chimica",
-            "file_demo": "appunti_bot/files/demo_chimica.pdf",
+            "file_demo": "appunti_bot/files/demo-chimica.pdf",
 
             # --- PREZZI E CONFIGURAZIONE ---
             "prezzo_singolo": 1.0,      # Prezzo numerico (float) per i calcoli
@@ -101,7 +101,7 @@ Disponibili fino alla lezione 14 (successive presto in arrivo).
         "algebra-geometria": {
             "titolo": "📐Algebra Lineare e Geometria",
             "prezzo": "5,00€",
-            "file_demo": "appunti_bot/files/demo_algebra_geometria.pdf",
+            "file_demo": "appunti_bot/files/demo-algebra_geometria.pdf",
 
             "prof": "Prof Giovanni Manno",
             "anno_accademico": "2024/2025",
