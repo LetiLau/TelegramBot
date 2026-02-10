@@ -44,7 +44,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     formati_txt = "\n".join([f"- {f}" for f in formati])
     
     testo = (
-        f"🧪 <b>{dati.get('titolo')}</b>\n"
+        f"<b>{dati.get('titolo')}</b>\n"
         f"👤 {dati.get('prof')}\n\n"
         f"{dati.get('descrizione')}\n\n"
         f"💾 <b>Formati inclusi:</b>\n{formati_txt}\n\n"
