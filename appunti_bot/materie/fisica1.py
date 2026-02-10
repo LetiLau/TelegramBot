@@ -47,20 +47,22 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     prof = dati.get('prof', 'Prof. N/D')
     anno = dati.get('anno_accademico', 'N/D')
     desc = dati.get('descrizione', '')
+    libro = dati.get('libro', 'N/D')
     
     # Prezzi letti dal catalogo
     p_base = dati.get('prezzo', 'N/D')      # Prezzo solo appunti
     p_full = dati.get('prezzo_full', 'N/D') # Prezzo pacchetto
     
     formati = dati.get('formati', [])
-    formati_txt = ", ".join(formati) # Es: "PDF, Notewise"
+    formati_txt = "\n".join([f"- {f}" for f in formati])
 
     # --- TESTO MESSAGGIO ---
     testo = (
-        f"📚 <b>{titolo}</b>\n"
+        f"<b>{titolo}</b>\n"
         f"👤 {prof} (a.a. {anno})\n\n"
+        f"📚 Libro di riferimento: {libro}"
         f"{desc}\n"
-        f"💾 <b>Formati:</b> {formati_txt}\n\n"
+        f"💾 <b>Formati disponibili:</b> {formati_txt}\n\n"
         "👇 <b>Seleziona l'opzione di acquisto:</b>"
     )
     
