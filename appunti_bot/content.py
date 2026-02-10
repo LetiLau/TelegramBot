@@ -22,7 +22,7 @@ CATALOGO = {
             # --- NUOVI CAMPI ---
             "prof": "Prof. Stefania Bufalino",
             "anno_accademico": "2024/2025",
-            "libro": "Mazzoldi, Nigro, Voci - Elementi di Fisica (meccanica e termodinamica)",
+            "libro": "Mazzoldi, Nigro, Voci - Fisica Vol. I Meccanica e Termodinamica",
             
             # Elenco dei formati (puoi metterne quanti vuoi)
             "formati": [
@@ -127,8 +127,99 @@ Acquistabili come intero pacchetto.
   }, #fine anno 1
         
   
-  "anno_2": {
+ 
+    "anno_2": {
+        
+      "elettrom_elettrotec": {
+            # --- DATI OBBLIGATORI ---
+            "titolo": "⚡🧲 Elettromagnetismo e Teoria dei circuiti",
+            #"tipo": "standard",
+            "file_demo": "appunti_bot/files/demo-elettromag_elettrotec.pdf",
+            "prezzo_completo": "13,00€",
+            "libri_full": "Mazzoldi, Nigro, Voci - Fisica Vol. II Elettromagnetismo e onde\nYoung, Freedman, Ford - Principi di Fisica Vol 2 Elettromagnetismo e Ottica\nPerfetti - Circuiti elettrici"
+            "anno_accademico": "2025/2026",
 
+          
+            # --- NUOVI CAMPI ---
+            "prof": "Prof. Stefania Bufalino",
+    
+        
+            # Elenco dei formati full (puoi metterne quanti vuoi)
+            "formati_full": [
+                "PDF, colori/bianco e nero",
+                "Notewise (versione app gratuita Android/IOS), modificabile",
+                "Samsung Notes",
+                "Markdown"
+            ],
+
+            # Descrizione lunga (HTML)
+            "descrizione_full": """
+📌Include l'intero corso diviso nei due moduli ufficiali.
+✅ <b>Modulo Elettrotecnica:</b>
+Circuiti fondamentali / partitori / analisi nodale / amplificatori operazionali / Millman / Thevenin / Norton / principio sostituzione / circuiti RL, RC, del secondo ordine / fasori / potenze / Bode.
+✅ <b>Modulo Fisica 2:</b>
+Elettrostatica (lavoro ed energia, potenziale, forze, campo elettrico, conduttori) / Gauss / eqauzioni di Maxwell / corrente elettrica / magnetostatica / legge di Ampère / Biot-Savart / campi elettrici e magnetici variabili nel tempo / onde elettromagnetiche
+
+""",            
+
+            # --- SOTTO-MODULO 1: ELETTROTECNICA ---
+            "mod_elettro": {
+                "nome": "⚡ Elettrotecnica",
+                "prof": "Prof. Paolo Stefano Crovetti",
+                "prezzo": "8,00€",
+                "libro": "Perfetti - Circuiti elettrici",
+                "formati": [
+                    "PDF non modificabile (colori o bianco e nero)", 
+                    "Notewise (versione app gratuita Android/IOS), modificabile"
+                ],
+                "descrizione": """
+                
+                """
+            },
+
+            # --- SOTTO-MODULO 2: FISICA 2 ---
+            "mod_fisica2": {
+                "nome": "🧲 Fisica 2",
+                "prof": "Prof. Mauro Giorcelli",
+                "prezzo_base": "1,00€",
+                "prezzo_full": "8,00€",
+                "libro": "Mazzoldi, Nigro, Voci - Fisica Vol. II Elettromagnetismo e onde\nYoung, Freedman, Ford - Principi di Fisica Vol 2 Elettromagnetismo e Ottica",
+                "formati": ["PDF non modificabile", "Notewise (versione app gratuita Android/IOS), modificabile", "Samsung Notes modificabile", "Markdown modificabile"],
+                "descrizione": """
+
+                Gli appunti di <i>teoria di Fisica 2</i> (senza dimostrazioni) sono stati generati da IA basandosi sulle slide del professore, <u>motivo per cui il loro prezzo è estremamente ridotto</u>. 
+                Tuttavia sono stati completamente <b>ricorretti e modificati da me</b> con aggiunta di dettagli, note teoriche per i quiz e immagini dei libri.
+                Sono scritti in formato .md (markdown, ovvero file di testo formattato) e disponibili anche in PDF.
+                (Visto che sono molto <u>completi ho pensato di metterli comunque a disposizione</u>)
+
+                Gli <i>esercizi</i> invece sono quelli che poi possono uscire all'esame (aggiornati all'a.a. specificato) e sono <b>completamente riscritti e risvolti a mano da me</b> (scritti a colori su tablet per facilitare comprensione). 
+                Sono tratti dal libro Mazzoldi.
+                
+                📌 <b>Argomenti: (con riferimento ai singoli capitoli):</b>
+                • 1, 2, 3, 4 - Processi di carica / Coulomb e campo elettrico / Linee di forza / Lavoro e potenziale / Gradiente, rotore, divergenza / Gauss / Condensatori
+                • 6 - Modello di conduzione della corrente / Legge di Ohm e Resistenze / Potenza elettrica, Effetto Joule e densità di potenza
+                • 7, 8 - Campo Magnetico / forza magnetica / sorgenti del campo / legge di Ampère
+                • 10 - Legge di Faraday-Neumann-Lenz / legge di Felici / induttanza / circuiti RL (transitori) / energia magnetica e densità di energia / mutua induzione / corrente di spostamento / equazioni di Maxwell in forma integrale e locale
+                • 12 - Onde elettromagnetiche: Differenze tra onde elastiche ed elettromagnetiche / velocità della luce / relazione tra i moduli dei campi e propagazione nella materia (indice di rifrazione) / vettore di Poynting / densità di energia / intensità / pressione di radiazione / polarizzazione, legge di Malus, circolare ed ellittica / vettore d'onda / radiazione e resistenza di radiazione.
+
+                ✏️ <b>Elenco degli esercizi:</b>
+                Tratti dal libro Mazzoldi con riferimento ai capitoli
+                • 1 - 2, 3, 8
+                • 2 - 1, 5, 7
+                • 3 - 2, 3, 5, 9
+                • 4 - 1, 5
+                • 7 - 1, 4, 6, 7, 10, 11, 12, 13, 9
+                • 8 - 1, 2, 3, 4, 6, 7, 8, 10, 11, 12
+                • 10 - 1, 2, 4, 6, 7, 9, 12, 13, 15, 16, 21, 23
+                • 13 - 2, 3, 4, 5, 8, 9
+                
+                """
+            } #fine fisica 2
+          
+        }, #fine elettorm elettrotec
+
+
+      
       #altre materie
   
    }
