@@ -74,7 +74,8 @@ async def show_full_package(update: Update, context: ContextTypes.DEFAULT_TYPE):
     testo = (
         f"📦 <b>PACCHETTO COMPLETO</b>\n"
         f"Include Elettrotecnica & Fisica 2.\n\n"
-        f"👤 <b>Prof:</b> {prof_el} & {prof_f2}\n\n"
+        f"👤 <b>Prof:</b> {prof_el} & {prof_f2}\n"
+        f"a.a {anno}\n\n"
         f"{dati.get('descrizione_full')}\n\n"
         f"💾 <b>Formati inclusi:</b> {formati}\n"
         f"💰 Prezzo Totale: <b>{dati.get('prezzo_completo')}</b>"
