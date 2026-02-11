@@ -90,7 +90,7 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
 • 17, 18 - Equilibrio chimico / Teorie acido base e PH
 • 19 - Equilibri e soluzioni acquose
 • 20, 21 - Elettrochimica / Chimica Organica
-"""
+""",
             
             "descrizione": """
 Appunti completamente sostitutivi alle <b>lezioni di teoria</b>. 
