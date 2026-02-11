@@ -17,7 +17,7 @@ MODULE_MAP = {
     "fisica_1": fisica1,
     "chimica": chimica,
     "algebra-geometria": algebra_geom,
-    "elettromag-elettrotec": elettrom_elettrotec
+    "elettrom_elettrotec": elettromag_elettrotec
 }
 
 # --- MENU PRINCIPALE (Scelta Anno) ---
