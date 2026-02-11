@@ -7,7 +7,7 @@ from appunti_bot.utils import invia_ordine_generico
 
 # Chiavi catalogo
 KEY_ANNO = "anno_2"
-KEY_MATERIA = "elettrom_elettrotec"
+KEY_MATERIA = "elettromag_elettrotec"
 
 # Prefisso callback
 PREFIX = "em_" 
