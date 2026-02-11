@@ -53,7 +53,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"👤 {prof} (a.a. {anno})\n\n"
         f"📚 Libro di riferimento: {libro}\n"
         f"{dati.get('descrizione')}\n"
-        f"{dati.get('lista_capitoli', "<u>Elenco non disponibile</u>")}"
+        f"{dati.get('lista_capitoli', "<u>Elenco non disponibile</u>")}\n"
         f"💾 <b>Formati disponibili:</b>\n{formati_txt}\n\n"
         f"💰 Prezzo per singolo file: <b>{p_sing}€</b>\n"
         f"💰 Prezzo per tutti i file: <b>{p_full}</b>\n\n"
