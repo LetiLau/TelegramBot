@@ -138,7 +138,7 @@ Acquistabili come intero pacchetto.
  
     "anno_2": {
     
-      "elettrom_elettrotec": {
+      "elettromag_elettrotec": {
             # --- DATI OBBLIGATORI ---
             "titolo": "⚡🧲 Elettromagnetismo e Teoria dei circuiti",
             #"tipo": "standard",
