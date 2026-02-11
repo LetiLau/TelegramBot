@@ -6,18 +6,21 @@ from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandle
 from .content import CATALOGO
 
 # 2. Importiamo i moduli specifici (le Logiche di vendita)
-from .materie import fisica1, chimica, algebra_geom, elettrom_elettrotec
+from .materie import fisica1             # <--- Nome del FILE .py
+from .materie import chimica
+from .materie import algebra_geom
+from .materie import elettrom_elettrotec
 
 TOKEN = os.getenv("APPUNTI_BOT")
 
 # 3. MAPPA DI COLLEGAMENTO
 # Associa la "chiave" del catalogo al "modulo python" che deve gestirla
-# Esempio: se nel catalogo c'è "fisica_1", usa il file 'fisica1.py'
 MODULE_MAP = {
+    # "CHIAVE_CATALOGO" : NOME_FILE_IMPORTATO
     "fisica_1": fisica1,
     "chimica": chimica,
     "algebra-geometria": algebra_geom,
-    "elettrom_elettrotec": elettromag_elettrotec
+    "elettromag_elettrotec": elettrom_elettrotec
 }
 
 # --- MENU PRINCIPALE (Scelta Anno) ---
