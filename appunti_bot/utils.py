@@ -36,26 +36,49 @@ async def invia_ordine_generico(update: Update, context: ContextTypes.DEFAULT_TY
         except Exception as e:
             print(f"Errore invio admin: {e}")
             invio_ok = False
+
+    # 2. Gestione Messaggio UTENTE (Modificato)
     
+    # A. Cancelliamo il menu di acquisto precedente (pulizia)
+    # Così l'utente non può cliccare "Compra" due volte per sbaglio
+    try:
+        await query.message.delete()
+    except:
+        pass
+                                  
     # 3. Risposta UTENTE
     if invio_ok:
         msg_utente = (
             "✅ <b>Richiesta Inviata!</b>\n\n"
             f"Hai scelto: <b>{titolo_materia}</b>\n"
-            f"📦 Versione: {dettaglio_ordine}\n"
+            f"🛒 Versione: {dettaglio_ordine}\n"
             f"💶 Prezzo: <b>{prezzo_totale}</b>\n\n"
-            "Il venditore ti contatterà a breve qui su Telegram."
+            "📩 Il venditore ha ricevuto la notifica e ti scriverà a breve su Telegram."
         )
         # Tasto per tornare alla Home (che gestirà logic.py)
-        kb = [[InlineKeyboardButton("🔙 Torna alla Home", callback_data='main_start')]]
-        await query.edit_message_text(msg_utente, reply_markup=InlineKeyboardMarkup(kb), parse_mode='HTML')
+        # B. Bottone SPECIALE per tornare a casa senza cancellare questo messaggio
+        kb = [[InlineKeyboardButton("🏠 Torna alla Home", callback_data='return_home_new')]]
+
+        # C. Usiamo send_message invece di edit_message_text
+        await context.bot.send_message(
+            chat_id=query.message.chat_id,
+            text=msg_utente, 
+            reply_markup=InlineKeyboardMarkup(kb), 
+            parse_mode='HTML'
+        )
+
     else:
         # Fallback se il bot non riesce a scriverti
-        url_admin = f"tg://user?id={ADMIN_ID}" if ADMIN_ID else "https://t.me/TUO_USERNAME"
+        url_admin = f"tg://user?id={ADMIN_ID}" if ADMIN_ID else "https://t.me/RedzFoxx"
         msg_errore = (
             "❌ <b>Errore tecnico.</b>\n"
             "Non sono riuscito ad avvisare il venditore in automatico.\n"
             "Per favore, scrivigli tu manualmente."
         )
         kb = [[InlineKeyboardButton("💬 Contatta Admin", url=url_admin)]]
-        await query.edit_message_text(msg_errore, reply_markup=InlineKeyboardMarkup(kb), parse_mode='HTML')
+        await context.bot.send_message(
+            chat_id=query.message.chat_id,
+            text=msg_errore, 
+            reply_markup=InlineKeyboardMarkup(kb), 
+            parse_mode='HTML'
+        )
