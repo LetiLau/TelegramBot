@@ -189,7 +189,7 @@ Contengono tutte le <u>formule da usare</u> (applicando i teoremi), note teorich
 
 📌 <b>Argomenti trattati:</b>
 • Elenco di regole generali per l'analisi dei circuiti
-• Convenzioni sui circuiti / leggi di Kirchhoff / potenza assorbita e generata / energia assorbita da un dipolo
+• Convenzioni sui circuiti / leggi di Kirchhoff / potenza assorbita e generata / energia assorbita da un bipolo
 • Leggi di ohm
 • Generatori ideali indipendenti e dipendenti / bipoli equivalenti per generatori reali
 • Connessione di bipoli / equivalenete di più generatori
