@@ -144,7 +144,7 @@ Acquistabili come intero pacchetto.
             #"tipo": "standard",
             "file_demo": "appunti_bot/files/demo-elettromag_elettrotec.pdf",
             "prezzo_completo": "14,00€",
-            "libri_full": "Mazzoldi, Nigro, Voci - Fisica Vol. II Elettromagnetismo e onde\nYoung, Freedman, Ford - Principi di Fisica Vol 2 Elettromagnetismo e Ottica\nPerfetti - Circuiti elettrici",
+            "libri_full": "• Mazzoldi, Nigro, Voci - Fisica Vol. II Elettromagnetismo e onde\n• Young, Freedman, Ford - Principi di Fisica Vol 2 Elettromagnetismo e Ottica\n• Perfetti - Circuiti elettrici",
             "anno_accademico": "2025/2026",
     
         
@@ -161,8 +161,10 @@ Acquistabili come intero pacchetto.
 
 📌Include l'intero corso diviso nei due moduli ufficiali. 
 Comprende teoria fisica 2, regole e teoria elettrotecnica, svolgimento esericizi d'esame di fisica 2 (elenco nel dettaglio di fisica), svolgimenti prove d'esame di elettrotecnica.
+
 ✅ <b>Modulo Elettrotecnica:</b>
 Circuiti fondamentali / partitori / analisi nodale / amplificatori operazionali / Millman / Thevenin / Norton / principio sostituzione / circuiti RL, RC, del secondo ordine / fasori / potenze / Bode.
+
 ✅ <b>Modulo Fisica 2:</b>
 Elettrostatica (lavoro ed energia, potenziale, forze, campo elettrico, conduttori) / Gauss / eqauzioni di Maxwell / corrente elettrica / magnetostatica / legge di Ampère / Biot-Savart / campi elettrici e magnetici variabili nel tempo / onde elettromagnetiche
 
