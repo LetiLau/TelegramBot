@@ -43,12 +43,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Seleziona il tuo anno per vedere le materie disponibili⬇️:"
     )
     
-    if update.message:
-        await update.message.reply_text(testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
+    # Logica intelligente:
+    # Se è un comando (/start) OPPURE se abbiamo chiesto un messaggio nuovo (force_new)
+    # allora usiamo send_message.
+    if update.message or force_new:
+        chat_id = update.effective_chat.id
+        await context.bot.send_message(chat_id=chat_id, text=testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
     else:
-        # Se torniamo indietro col tasto back
+        # Altrimenti modifichiamo il messaggio esistente (comportamento classico)
         await update.callback_query.edit_message_text(testo, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
-
+        
 # --- MENU MATERIE (Scelta Corso) ---
 async def menu_materie(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -88,9 +92,15 @@ async def router(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     data = query.data
     
-    # 1. Torna alla Home
+    # 1. Torna alla Home (Metodo Classico - Sovrascrive)
     if data == 'main_start':
         await start(update, context)
+        return
+
+    # 1-BIS. Torna alla Home (NUOVO Metodo - Mantiene lo scontrino)
+    elif data == 'return_home_new':
+        await query.answer() # Toglie l'orologio di caricamento dal bottone
+        await start(update, context, force_new=True) # Chiama start forzando un nuovo messaggio
         return
 
     # 2. Scelta dell'Anno -> Mostra Materie
