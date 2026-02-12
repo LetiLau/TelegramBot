@@ -70,7 +70,8 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"{desc}\n"
         f"💾 <b>Formati disponibili:</b>\n{formati_txt}\n\n"
         f"💰 Prezzo: <b>{prezzo}</b>\n\n"
-        "Cosa vuoi fare?"
+        "(Pagamento e preferenze gestiti in chat💬)\n\n"
+        "👇<b>Cosa vuoi fare?</b>"
     )
     
     # --- 3. PULSANTI ---
