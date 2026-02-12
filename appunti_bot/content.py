@@ -95,10 +95,10 @@ Sono <i>scritti a mano</i> (chiari e leggibili) e <i>colorati</i> per facilitare
             "descrizione": """
 Appunti completamente sostitutivi alle <b>lezioni di teoria</b>. 
 Basati sulle slide, videolezioni del professore e sul libro di riferimento.
-Sono <i>scritti a mano</i> (chiari e leggibili), organizzati in <i>singoli file</i> (in media 5-10 pagine) uno per ogni blocco di slide.
+Sono <i>scritti a mano</i> (chiari e leggibili), organizzati in <i>singoli file</i> (in media 8-12 pagine) uno per ogni blocco di slide.
 <b>Disponibili fino alla lezione 14</b> (successive presto in arrivo).
 
-📌 <b>Argomenti: (con riferimento ai singoli file):</b>"""
+📌 <b>Argomenti: (riferiti ai singoli blocchi di slide):</b>"""
 
             
         }, #fine chimica
