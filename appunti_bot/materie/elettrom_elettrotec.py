@@ -39,7 +39,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     p_full = dati.get("prezzo_completo", "N/D")
 
     testo = (
-        f"⚡ <b>{dati.get('titolo')}</b>\n\n"
+        f"<b>{dati.get('titolo')}</b>\n\n"
         "Corso diviso in due moduli. Puoi acquistarli singolarmente o insieme.\n\n"
         f"👤 <b>Elettrotecnica:</b> {prof_el}\n"
         f"👤 <b>Fisica 2:</b> {prof_f2}\n\n"
@@ -77,7 +77,7 @@ async def show_full_package(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Include Elettrotecnica & Fisica 2.\n\n"
         f"👤 <b>Prof:</b> {prof_el} & {prof_f2}\n"
         f"a.a {anno}\n\n"
-        f"📚 Libro di riferimento: {libri}\n"
+        f"📚 Libro di riferimento:\n{libri}\n"
         f"{dati.get('descrizione_full')}\n\n"
         f"💾 <b>Formati disponibili:</b> {formati_txt}\n"
         f"💰 Prezzo Totale: <b>{dati.get('prezzo_completo')}</b>"
