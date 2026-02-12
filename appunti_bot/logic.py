@@ -24,7 +24,7 @@ MODULE_MAP = {
 }
 
 # --- MENU PRINCIPALE (Scelta Anno) ---
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE, force_new=False):
     """
     Genera dinamicamente i pulsanti basandosi sugli ANNI nel Catalogo.
     """
