@@ -57,6 +57,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"💾 <b>Formati disponibili:</b>\n{formati_txt}\n\n"
         f"💰 Prezzo per singolo file: <b>{p_sing}€</b>\n"
         f"💰 Prezzo per tutti i file: <b>{p_full}</b>\n\n"
+        "(Pagamento e preferenze gestiti in chat💬)\n\n"
         "👇 <b>Come vuoi acquistarli?</b>"
     )
     
