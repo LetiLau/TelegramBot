@@ -75,11 +75,12 @@ async def show_full_package(update: Update, context: ContextTypes.DEFAULT_TYPE):
     testo = (
         f"📦 <b>PACCHETTO COMPLETO</b>\n"
         f"Include Elettrotecnica & Fisica 2.\n\n"
-        f"👤 <b>Prof:</b> {prof_el} & {prof_f2}\n"
+        f"👤 {prof_el} & {prof_f2}\n"
         f"a.a {anno}\n\n"
-        f"📚 Libro di riferimento:\n{libri}\n"
-        f"{dati.get('descrizione_full')}\n\n"
-        f"💾 <b>Formati disponibili:</b> {formati_txt}\n"
+        f"📚 Libri di riferimento:\n{libri}\n"
+        f"{dati.get('descrizione_full')}\n"
+        f"💾 <b>Formati disponibili:</b> {formati_txt}\n\n"
+        "(Pagamento e preferenze gestiti in chat💬)\n\n"
         f"💰 Prezzo Totale: <b>{dati.get('prezzo_completo')}</b>"
     )
     
@@ -105,8 +106,9 @@ async def show_elettro(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"<b>{dati['nome']}</b>\n"
         f"👤 {dati['prof']} (a.a. {anno})\n\n"
         f"📚 Libro di riferimento: {libro}\n"
-        f"{dati['descrizione']}\n\n"
-        f"💾 <b>Formati disponibili:</b> {formati}\n"
+        f"{dati['descrizione']}\n"
+        f"💾 <b>Formati disponibili:</b> {formati_txt}\n\n"
+        "(Pagamento e preferenze gestiti in chat💬)\n\n"
         f"💰 Prezzo: <b>{dati['prezzo']}</b>"
     )
     
@@ -134,9 +136,10 @@ async def show_fisica2(update: Update, context: ContextTypes.DEFAULT_TYPE):
     testo = (
         f"<b>{dati['nome']}</b>\n"
         f"👤 {dati['prof']} (a.a. {anno})\n\n"
-        f"📚 Libro di riferimento: {libro}\n"
-        f"{dati['descrizione']}\n\n"
+        f"📚 Libri di riferimento:\n{libro}\n"
+        f"{dati['descrizione']}\n"
         f"💾 <b>Formati disponibili:</b> {formati}\n\n"
+        "(Pagamento e preferenze gestiti in chat💬)\n\n"
         "👇 <b>Scegli la versione che vuoi acquistare:</b>"
     )
     
