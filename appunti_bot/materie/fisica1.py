@@ -63,6 +63,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"📚 Libro di riferimento: {libro}\n"
         f"{desc}\n"
         f"💾 <b>Formati disponibili:</b>\n {formati_txt}\n\n"
+        "(Pagamento e preferenze gestiti in chat💬)\n\n"
         "👇 <b>Seleziona l'opzione di acquisto:</b>"
     )
     
