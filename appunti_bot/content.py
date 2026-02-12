@@ -211,7 +211,7 @@ Contengono tutte le <u>formule da usare</u> (applicando i teoremi), note teorich
                 "prof": "Prof. Mauro Giorcelli",
                 "prezzo_base": "1,00€",
                 "prezzo_full": "8,00€",
-                "libro": "Mazzoldi, Nigro, Voci - Fisica Vol. II Elettromagnetismo e onde\nYoung, Freedman, Ford - Principi di Fisica Vol 2 Elettromagnetismo e Ottica",
+                "libro": "• Mazzoldi, Nigro, Voci - Fisica Vol. II Elettromagnetismo e onde\n• Young, Freedman, Ford - Principi di Fisica Vol 2 Elettromagnetismo e Ottica",
                 "formati": ["PDF non modificabile", "Notewise (versione app gratuita Android/IOS), modificabile", "Samsung Notes modificabile", "Markdown modificabile"],
                 "descrizione": """
 
