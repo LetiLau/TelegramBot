@@ -1,16 +1,29 @@
 import asyncio
 import os
 import oci
+import requests
 
-async def oracle_cloud_worker(app_bot):
-    """
-    Tenta di creare la VM in loop.
-    Prende in input l'istanza del bot per inviare le notifiche push all'admin.
-    """
-    admin_id = os.getenv("ADMIN_ID")
-    if not admin_id:
-        print("[Oracle] ERRORE: ADMIN_ID mancante nelle variabili d'ambiente.")
+def send_telegram_alert(message):
+    """Invia un messaggio Telegram usando direttamente le API HTTP."""
+    token = os.getenv("USEFUL_BOT")
+    chat_id = os.getenv("ADMIN_ID")
+    
+    if not token or not chat_id:
+        print("[Oracle] Token o Admin ID mancanti per la notifica Telegram.")
         return
+
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {"chat_id": chat_id, "text": message}
+    try:
+        requests.post(url, json=payload, timeout=10)
+    except Exception as e:
+        print(f"[Oracle] Impossibile inviare notifica Telegram: {e}")
+
+async def oracle_cloud_worker(): # Nessun parametro in ingresso!
+    """Tenta di creare la VM in loop."""
+    
+    # Messaggio di avvio
+    send_telegram_alert("🚀 Script Oracle avviato in background. Inizio polling...")
 
     config = {
         "user": os.environ.get("OCI_USER_ID"),
@@ -23,10 +36,12 @@ async def oracle_cloud_worker(app_bot):
     try:
         compute_client = oci.core.ComputeClient(config)
     except Exception as e:
-        print(f"[Oracle] Errore di inizializzazione client: {e}")
+        msg = f"❌ Errore di inizializzazione client Oracle: {e}"
+        print(msg)
+        send_telegram_alert(msg)
         return
 
-    # Inserisci il tuo Availability Domain esatto (es. Uocm:EU-FRANKFURT-1-AD-1)
+    # RICORDATI DI INSERIRE IL TUO AD ESATTO QUI
     AVAILABILITY_DOMAIN = "INSERISCI_IL_TUO_AD_QUI" 
 
     instance_details = oci.core.models.LaunchInstanceDetails(
@@ -52,22 +67,20 @@ async def oracle_cloud_worker(app_bot):
         try:
             print(f"[Oracle] Tentativo {tentativo} di creazione VM...")
             
-            # Chiamata API bloccante delegata a un thread separato
             await asyncio.to_thread(compute_client.launch_instance, instance_details)
             
-            msg = "✅ Successo! La VM Oracle Cloud è stata creata. Puoi disattivare lo script su Render."
+            msg = "✅ SUCCESSO! La VM Oracle Cloud è stata creata. Spegni lo script!"
             print(msg)
-            # Notifica tramite il bot passato dal main
-            await app_bot.bot.send_message(chat_id=admin_id, text=msg)
+            send_telegram_alert(msg)
             break
             
         except oci.exceptions.ServiceError as e:
             if e.status in [500, 429]:
-                print(f"[Oracle] Out of capacity (Errore {e.status}). Riprovo tra 60s...")
+                print(f"[Oracle] Tentativo {tentativo}: Out of capacity. Riprovo tra 60s...")
                 await asyncio.sleep(60)
                 tentativo += 1
             else:
-                errore_msg = f"❌ Errore critico Oracle: {e.message}"
+                errore_msg = f"❌ Errore critico API Oracle: {e.message}"
                 print(errore_msg)
-                await app_bot.bot.send_message(chat_id=admin_id, text=errore_msg)
+                send_telegram_alert(errore_msg)
                 break
