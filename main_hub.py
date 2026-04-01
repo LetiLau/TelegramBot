@@ -4,6 +4,7 @@ import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from dotenv import load_dotenv
 
+load_dotenv('/etc/secrets/.env')
 
 # Importiamo la logica del tuo bot dalla cartella
 from aule_bot import logic as aule_logic
@@ -13,7 +14,6 @@ from appunti_bot import logic as appunti_logic
 # Importiamo il worker separato per Oracle Cloud
 from oracle_logic.oracle_cloud_worker import oracle_cloud_worker
 
-load_dotenv('/etc/secrets/.env')
 
 # --- SERVER FAKE PER RENDER (Uno solo per tutti!) ---
 class HealthCheckHandler(BaseHTTPRequestHandler):
