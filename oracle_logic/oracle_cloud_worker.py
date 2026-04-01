@@ -3,10 +3,12 @@ import os
 import oci
 import requests
 
-token = os.getenv("USEFUL_BOT")
-chat_id = os.getenv("ADMIN_ID")
+
 
 def send_telegram_alert(message):
+    token = os.getenv("USEFUL_BOT")
+    chat_id = os.getenv("ADMIN_ID")
+    
     """Invia un messaggio Telegram usando direttamente le API HTTP."""
     
     if not token or not chat_id:
@@ -19,6 +21,8 @@ def send_telegram_alert(message):
         requests.post(url, json=payload, timeout=10)
     except Exception as e:
         print(f"[Oracle-Debug] Impossibile inviare notifica Telegram: {e}")
+
+
 
 async def oracle_cloud_worker():
     """Versione Debugger: Controlla l'ambiente prima di agire."""
