@@ -4,7 +4,7 @@ import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from dotenv import load_dotenv
 
-load_dotenv('/etc/secrets/.env')
+#load_dotenv('/etc/secrets/.env')
 
 # Importiamo la logica del tuo bot dalla cartella
 from aule_bot import logic as aule_logic
@@ -12,7 +12,7 @@ from aule_bot import logic as aule_logic
 from appunti_bot import logic as appunti_logic
 
 # Importiamo il worker separato per Oracle Cloud
-from oracle_logic.oracle_cloud_worker import oracle_cloud_worker
+#from oracle_logic.oracle_cloud_worker import oracle_cloud_worker
 
 
 # --- SERVER FAKE PER RENDER (Uno solo per tutti!) ---
@@ -60,9 +60,9 @@ async def main():
 
 
         # Inietta il task Oracle nell'Event Loop
-        print("☁️ Avvio worker Oracle in background...")
+        #print("☁️ Avvio worker Oracle in background...")
         # NOTA: Ora lanciamo la funzione senza passarle bot_aule!
-        asyncio.create_task(oracle_cloud_worker())
+        #asyncio.create_task(oracle_cloud_worker())
 
         
         print("✅ SISTEMA ONLINE! Premi Ctrl+C per fermare.")
