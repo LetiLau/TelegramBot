@@ -11,7 +11,7 @@ from aule_bot import logic as aule_logic
 from appunti_bot import logic as appunti_logic
 
 # Importiamo il worker separato per Oracle Cloud
-from oracle_logic import oracle_cloud_worker
+from oracle_logic.oracle_cloud_worker import oracle_cloud_worker
 
 load_dotenv('/etc/secrets/.env')
 
