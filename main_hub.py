@@ -60,9 +60,9 @@ async def main():
 
 
         # Inietta il task Oracle nell'Event Loop
-        # Passiamo bot_aule così il modulo oracle_logic può inviarti la notifica
         print("☁️ Avvio worker Oracle in background...")
-        asyncio.create_task(oracle_cloud_worker(bot_aule))
+        # NOTA: Ora lanciamo la funzione senza passarle bot_aule!
+        asyncio.create_task(oracle_cloud_worker())
 
         
         print("✅ SISTEMA ONLINE! Premi Ctrl+C per fermare.")
