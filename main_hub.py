@@ -4,7 +4,14 @@ import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from dotenv import load_dotenv
 
-#load_dotenv('/etc/secrets/.env')
+# Calcola dinamicamente la cartella esatta in cui si trova questo file (main_hub.py)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Unisce la cartella al nome del file .env
+percorso_env = os.path.join(BASE_DIR, '.env')
+
+# Carica le variabili
+load_dotenv(percorso_env)
 
 # Importiamo la logica del tuo bot dalla cartella
 from aule_bot import logic as aule_logic
